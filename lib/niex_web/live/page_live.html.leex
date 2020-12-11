@@ -1,0 +1,13 @@
+<div class="niex" phx-hook="NiexPage" id="niex-page">
+    <button <%= !@state.dirty && "disabled" %> phx-click="save"><%= !@state.dirty && "Saved!" || "Save" %></button>
+    <button <%= !@state.selected_cell && "disabled" %> phx-click="add-cell" phx-value-ref="<%= @state.selected_cell %>">+</button>
+    <button <%= !@state.selected_cell && "disabled" %> phx-click="remove-cell" phx-value-ref="<%= @state.selected_cell %>">-</button>
+    <form phx-change="update-title">
+        <input type="text" name="title" class="title" value="<%= @state.notebook["metadata"]["name"] %>"></input>
+    </form>
+   <section>
+    <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)["cells"]) do %>
+      <p><%= Niex.Cells.render(@state, cell, i) %></p>
+    <% end %>
+  </section>
+</div>

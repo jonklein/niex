@@ -1,0 +1,22 @@
+.niex {
+  input.title {
+    border: none;
+    height: 60px;
+    font-size: 32pt;
+  }
+
+  .cell button { color: #333333; }
+
+  .cell .cell-row {
+    display: flex;
+    .gutter {  width: 80px; font-family: monospace; }
+    .content { flex-grow: 1; }
+  }
+  .cell textarea { font-family: monospace; background: #eee; border: 1px solid #ddd; }
+
+  .cell textarea { min-height: 20px; resize: none; overflow: hidden; }
+
+  form, textarea {
+    margin: 0px;
+  }
+}
