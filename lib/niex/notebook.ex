@@ -66,30 +66,30 @@ defmodule Niex.Notebook do
     }
   end
 
-  def execute_cell(state, idx, input) do
+  def execute_cell(state, socket, idx, input) do
     cell = input_cell(state.notebook, state.worksheet, idx)
-    {output, bindings} = eval(input, state.bindings)
+    {output, bindings} = eval(socket, input, state.bindings)
 
     %{
-      update_cell(state, idx, %{"input" => [input], "outputs" => outputs(output)})
+      update_cell(state, idx, %{"input" => [input], "outputs" => outputs(socket, output)})
       | bindings: bindings
     }
   end
 
-  def outputs(output = %Niex.Content{}) do
+  def outputs(_, output = %Niex.Content{}) do
     [%{"text" => Niex.Content.render(output)}]
   end
 
-  def outputs(output = %Contex.Plot{}) do
+  def outputs(_, output = %Contex.Plot{}) do
     {:safe, svg} = Contex.Plot.to_svg(output)
     [%{"text" => svg}]
   end
 
-  def outputs(output) do
+  def outputs(_, output) do
     [%{"text" => [inspect(output)]}]
   end
 
-  def eval(input, bindings) do
+  def eval(socket, input, bindings) do
     try do
       Code.eval_string(input, bindings, functions: [{Niex.Eval, [alias: 1]}])
     rescue

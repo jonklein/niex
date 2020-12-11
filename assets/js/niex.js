@@ -1,6 +1,8 @@
 import EasyMDE from "easymde"
 require("easymde/dist/easymde.min.css")
-// import Editor from '@toast-ui/editor';
+
+import Chartkick from "chartkick"
+import ChartJS from "chart.js"
 
 const resizeTextArea = (el) => {
     el.style.height = "5px"
@@ -8,6 +10,21 @@ const resizeTextArea = (el) => {
 }
 
 export const hooks = {
+    NiexChart: {
+        mounted: function() {
+            let data = JSON.parse(this.el.attributes['data-chart'].value)
+            let f = Chartkick[data.type]
+            let options = data.options || {}
+            new f(this.el, data.data, options)
+        },
+        updated: function() {
+            let data = JSON.parse(this.el.attributes['data-chart'].value)
+            let f = Chartkick[data.type]
+            let options = data.options || {}
+            new f(this.el, data.data, options)
+        }
+    },
+
     NiexPage: {
         mounted: function() {
             window.addEventListener("keypress", (e) => {

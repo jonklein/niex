@@ -16,12 +16,12 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("execute-cell", %{"cell_index" => cell_index, "command" => command}, socket) do
+    def handle_event("execute-cell", %{"index" => cell_index, "command" => command}, socket) do
     {idx, _} = Integer.parse(cell_index)
 
     state =
       socket.assigns[:state]
-      |> Niex.Notebook.execute_cell(idx, command)
+      |> Niex.Notebook.execute_cell(socket, idx, command)
 
     {:noreply, assign(socket, state: state)}
   end
@@ -46,7 +46,7 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("update-source", data = %{"index" => index, "text" => value}, socket) do
+  def handle_event("update-source", data = %{"index" => index, "command" => value}, socket) do
     {idx, _} = Integer.parse(index)
 
     state =
@@ -57,7 +57,6 @@ defmodule NiexWeb.PageLive do
   end
 
   def handle_event("add-cell", %{"ref" => index}, socket) do
-    index |> IO.inspect()
     {idx, _} = Integer.parse(index)
     {:noreply, assign(socket, state: Niex.Notebook.add_cell(socket.assigns[:state]))}
   end

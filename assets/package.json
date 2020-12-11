@@ -7,9 +7,10 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "chart.js": "^2.9.4",
+    "chartkick": "^3.2.1",
     "easymde": "^2.13.0",
     "nprogress": "^0.2.0",
-    "pen": "^2.2.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view"

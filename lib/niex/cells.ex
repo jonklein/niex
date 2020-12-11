@@ -4,7 +4,7 @@ defmodule Niex.Cells do
     Phoenix.HTML.raw("""
     <div class="cell markdown"  class="cell" tabindex='0' phx-value-ref="#{idx}">
       <form phx-change="update-markdown" phx-focus="focus-cell">
-        <input type="hidden" name="cell_index" value="#{idx}">
+        <input type="hidden" name="index" value="#{idx}">
         <textarea phx-value-ref="#{idx}" phx-blur="blur-cell" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-#{
       idx
     }">#{source}</textarea>
@@ -37,9 +37,9 @@ defmodule Niex.Cells do
             In [#{cell["prompt_number"]}]:
           </span>
         <span class="content">
-          <form phx-submit="execute-cell" phx-change="update-source-cell">
-           <input type="hidden" name="cell_index" value="#{idx}">
-        <textarea data-index="#{idx}" phx-hook="NiexCodeEditor" phx-focus="focus-cell" name="command" id="cell-code-#{
+          <form phx-submit="execute-cell" phx-change="update-source">
+           <input type="hidden" name="index" value="#{idx}">
+        <textarea phx-value-ref="#{idx}"  phx-hook="NiexCodeEditor" phx-focus="focus-cell" name="command" id="cell-code-#{
       idx
     }">#{Enum.join(input, "\n")}</textarea>
         #{submit}
