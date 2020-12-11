@@ -1,9 +1,47 @@
 .niex {
+  form, textarea, input {
+    margin: 0px;
+  }
+  button: {
+    margin: 8px;
+  }
+}
+
+.niex-header {
+  form {
+    flex-grow: 1;
+  }
+
   input.title {
+    flex-grow: 1;
+    width: 100%;
     border: none;
     height: 60px;
-    font-size: 32pt;
+    font-size: 22pt;
+    margin-left: 32px;
   }
+
+  .tools {
+    margin-left: auto;
+    margin-right: 32px;
+  }
+
+  z-index: 1;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  align-items: center;
+  height: 80px;
+  width: 100%;
+}
+
+.niex-body {
+  padding-top: 80px;
+
+  .cell { position: relative; }
 
   .cell button { color: #333333; }
 
@@ -16,7 +54,9 @@
 
   .cell textarea { min-height: 20px; resize: none; overflow: hidden; }
 
-  form, textarea {
-    margin: 0px;
+  button.run {
+    position: absolute;
+    right: 8px;
+    top: 8px;
   }
 }

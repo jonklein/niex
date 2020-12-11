@@ -26,7 +26,7 @@ defmodule Niex.Cells do
   end
 
   def render(state, cell = %{"cell_type" => "code", "input" => input, "outputs" => outputs}, idx) do
-    {:safe, submit} = Phoenix.HTML.Form.submit("Run", phx_disable_with: "Executing...")
+    {:safe, submit} = Phoenix.HTML.Form.submit("Run", class_name: "run", phx_disable_with: "Executing...")
 
     Phoenix.HTML.raw("""
       <div class="cell" tabindex='0' phx-focus="focus-cell" phx-blur="blur-cell" phx-value-ref="#{
@@ -42,7 +42,7 @@ defmodule Niex.Cells do
         <textarea phx-value-ref="#{idx}"  phx-hook="NiexCodeEditor" phx-focus="focus-cell" name="command" id="cell-code-#{
       idx
     }">#{Enum.join(input, "\n")}</textarea>
-        #{submit}
+        <button class="run" phx-disable-with="Running..." type="submit">Run</button>
       </form>
       </span>
       </div>
