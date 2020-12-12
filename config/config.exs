@@ -7,9 +7,6 @@
 # General application configuration
 use Mix.Config
 
-config :niex,
-  ecto_repos: [Niex.Repo]
-
 # Configures the endpoint
 config :niex, NiexWeb.Endpoint,
   url: [host: "localhost"],

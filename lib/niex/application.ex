@@ -7,8 +7,6 @@ defmodule Niex.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
-      Niex.Repo,
       # Start the Telemetry supervisor
       NiexWeb.Telemetry,
       # Start the PubSub system
