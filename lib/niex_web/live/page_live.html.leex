@@ -11,7 +11,7 @@
             </span>
             <div class="dropdown-items">
                 <a phx-click="add-cell" phx-value-type="code" class="item">Code</a>
-                <a phx-click="add-cell" phx-value-type="markxdown" class="item">Markdown</a>
+                <a phx-click="add-cell" phx-value-type="markdown" class="item">Markdown</a>
             </div>
         </div>
     </div>
@@ -19,7 +19,7 @@
 
 <div class="niex niex-body" phx-hook="NiexPage" id="niex-page">
     <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)["cells"]) do %>
-    <p><%= Niex.Cells.render(@state, cell, i) %></p>
+    <p><%= Niex.Cells.render(%{state: @state, cell: cell, idx: i}) %></p>
     <% end %>
 </div>
 
