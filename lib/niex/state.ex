@@ -32,9 +32,11 @@ defmodule Niex.State do
   end
 
   def from_string(str) do
-    %Niex.State{
-      notebook: Jason.decode!(str)
-    }
+    %Niex.State{notebook: Jason.decode!(str)}
+  end
+
+  def save(state, path) do
+    save(%{state | path: path})
   end
 
   def save(state = %Niex.State{path: path}) when not is_nil(path) do

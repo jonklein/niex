@@ -116,15 +116,15 @@
 .niex .file-dialog {
   background: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 24px;
+  border-radius: 8px;
+  padding: 16px;
   width: 600px;
   height: 500px;
   overflow: scroll;
   margin: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 3px #888888;
+  box-shadow: 1px 1px 6px #eeeeee;
 
   .file {
     cursor: pointer;

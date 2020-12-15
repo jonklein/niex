@@ -20,7 +20,7 @@ defmodule NiexWeb.PageLive do
   end
 
   def handle_info({:close_save_dialog, path}, socket) do
-    state = %{socket.assigns[:state] | path: path}
+    state = Niex.State.save(socket.assigns[:state], "#{path}.niex")
     {:noreply, assign(socket, show_save_dialog: false, state: state)}
   end
 
@@ -95,6 +95,10 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: Niex.Notebook.remove_cell(socket.assigns[:state]))}
   end
 
+  def handle_event("open", %{}, socket) do
+    {:noreply, assign(socket, show_open_dialog: true)}
+  end
+
   def handle_event("save", %{}, socket) do
     socket =
       if(
@@ -103,7 +107,6 @@ defmodule NiexWeb.PageLive do
         else: assign(socket, show_save_dialog: true)
       )
 
-    IO.inspect(socket.assigns)
     {:noreply, socket}
   end
 

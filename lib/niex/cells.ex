@@ -1,5 +1,6 @@
 defmodule Niex.Cells do
   use Phoenix.LiveComponent
+  import Phoenix.HTML
 
   def render(
         assigns = %{
@@ -14,7 +15,7 @@ defmodule Niex.Cells do
       <form phx-change="update-content" phx-focus="focus-cell">
         <input type="hidden" name="index" value="<%= idx %>" />
         <input type="hidden" name="cell_type" value="markdown" />
-        <textarea phx-value-ref="<%= idx %>" phx-blur="blur-cell" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= idx %>">#{source}</textarea>
+        <textarea phx-value-ref="<%= idx %>" phx-blur="blur-cell" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= idx %>"><%= @cell["source"] %></textarea>
         <div class="toolbar">
           <button class="run" phx-disable-with="Running..." type="submit">
             <i class="fas fa-play"></i>
@@ -37,18 +38,12 @@ defmodule Niex.Cells do
 
     ~L"""
     <div class="cell markdown" phx-focus="focus-cell" phx-blur="blur-cell" class="cell" tabindex='0' phx-value-ref="<%= idx %>">
-      <%= html %>
+      <%= raw(html) %>
     </div>
     """
   end
 
-  def render(
-        assigns = %{
-          cell: %{
-            "cell_type" => "code"
-          }
-        }
-      ) do
+  def render(assigns = %{cell: %{"cell_type" => "code"}}) do
     ~L"""
       <div class="cell" tabindex='0' phx-focus="focus-cell" phx-blur="blur-cell" phx-value-ref="<%=
       @idx
@@ -79,7 +74,7 @@ defmodule Niex.Cells do
             Out [<%= @cell["prompt_number"] %>]:
         </span>
         <span class="content out">
-            <%= Enum.join(Enum.map(@cell["outputs"], & &1["text"]), "\n") %>
+            <%= raw(Enum.join(Enum.map(@cell["outputs"], & &1["text"]), "\n")) %>
         </span>
         </div>
       </div>

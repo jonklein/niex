@@ -4,6 +4,7 @@
                value="<%= @state.notebook["metadata"]["name"] || Niex.Notebook.default_title %>"></input>
     </form>
     <div class="tools">
+        <button <%= @state.dirty && raw("data-confirm='The current notebook has unsaved changes - continue?'") %> phx-click="open">Open</button>
         <button <%= !@state.dirty && "disabled" %> phx-click="save"><%= !@state.dirty && "Saved!" || "Save" %></button>
         <div class="dropdown">
             <span>

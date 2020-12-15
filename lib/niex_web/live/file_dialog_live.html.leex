@@ -5,10 +5,12 @@
             <%= for {component, path} <- @paths do %>
             <a class="path" phx-click="select" phx-value-path='<%= path %>'><%= component %></a>
             <% end %>
+            <%= if @mode == "save" do %>
             <form phx-change="update-filename">
                 <input class="new_filename" type="text" value="<%= @filename %>"
                        name="filename"/>
             </form>
+            <% end %>
         </h4>
 
         <div class="files">
@@ -24,7 +26,7 @@
                 <button class="open" phx-click="open" <%= @selected == nil && "disabled" %>>Open</button>
             <% end %>
             <%= if @mode == "save" do %>
-                <button class="open" phx-click="save" <%= @filename == "" && "disabled" %>>Save</button>
+                <button class="open" phx-click="save" <%= @file_exists && raw('data-confirm="Warning: the selected file already exists - overwrite?"') %> <%= @filename == "" && "disabled" %>>Save</button>
             <% end %>
         </div>
     </div>

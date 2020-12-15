@@ -3,7 +3,6 @@ defmodule NiexWeb.FileDialogLive do
 
   def mount(_params, session, socket) do
     wd = File.cwd!()
-    socket.assigns
 
     {:ok,
      assign(socket,
@@ -15,7 +14,8 @@ defmodule NiexWeb.FileDialogLive do
        extensions: session["extensions"],
        paths: link_path(wd),
        filename: "Untitled",
-       files: files(socket, wd, session["extensions"])
+       file_exists: false,
+       files: files(socket, wd, session["mode"], session["extensions"])
      )}
   end
 
@@ -36,14 +36,19 @@ defmodule NiexWeb.FileDialogLive do
 
     send(
       socket.parent_pid,
-      {reply, Path.join(socket.assigns[:selected], socket.assigns[:filename])}
+      {reply, save_path(socket)}
     )
 
     {:noreply, assign(socket, show_file_dialog: false)}
   end
 
-  def handle_event("update-filename", %{filename: filename}, socket) do
-    {:noreply, assign(socket, filename: filename)}
+  def handle_event("update-filename", %{"filename" => filename}, socket) do
+    socket = assign(socket, filename: filename)
+
+    {result, _} = File.stat(save_path(socket))
+    file_exists = result == :ok
+
+    {:noreply, assign(socket, file_exists: file_exists)}
   end
 
   def handle_event("select", %{"path" => path}, socket) do
@@ -58,7 +63,7 @@ defmodule NiexWeb.FileDialogLive do
        selected: nil,
        working_directory: path,
        paths: link_path(path),
-       files: files(socket, path, socket.assigns[:extensions])
+       files: files(socket, path, socket.assigns[:mode], socket.assigns[:extensions])
      )}
   end
 
@@ -67,18 +72,27 @@ defmodule NiexWeb.FileDialogLive do
 
     {:noreply,
      assign(socket,
-       files: files(socket, socket.assigns[:working_directory], socket.assigns[:extensions])
+       files:
+         files(
+           socket,
+           socket.assigns[:working_directory],
+           socket.assigns[:mode],
+           socket.assigns[:extensions]
+         )
      )}
   end
 
-  def files(socket, path, extensions) do
+  def files(socket, path, mode, extensions) do
     files =
       File.ls!(path)
       |> Enum.map(fn file ->
         filepath = Path.join(path, file)
         {:ok, stat} = File.stat(filepath)
 
-        selectable = stat.type == :directory || Enum.find(extensions, &(&1 == Path.extname(file)))
+        selectable =
+          stat.type == :directory ||
+            (mode == "open" && Enum.find(extensions, &(&1 == Path.extname(file))))
+
         {file, Jason.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
       end)
   end
@@ -105,5 +119,9 @@ defmodule NiexWeb.FileDialogLive do
 
   defp separator do
     separator = Enum.at(Path.split(File.cwd!()), 0)
+  end
+
+  defp save_path(socket) do
+    Path.join(socket.assigns[:working_directory], socket.assigns[:filename])
   end
 end
