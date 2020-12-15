@@ -1,22 +1,27 @@
 defmodule Niex.Notebook do
-  import Kernel, except: [alias!: 1]
+  def default_title do
+    "Untitled Notebook"
+  end
 
-  def input_cell(notebook, worksheet, idx) do
-    Enum.at(notebook["worksheets"], worksheet)["cells"] |> Enum.at(idx)
+  def input_cell(state, idx) do
+    Enum.at(state.notebook["worksheets"], state.worksheet)["cells"] |> Enum.at(idx)
   end
 
   def update_metadata(state, metadata) do
     %{state | dirty: true, notebook: %{state.notebook | "metadata" => metadata}}
   end
 
-  def add_cell(state) do
+  def add_cell(state, cell_type) do
     worksheet = Enum.at(state.notebook["worksheets"], state.worksheet)
 
+    idx = state.selected_cell || length(worksheet["cells"])
+
     cells =
-      List.insert_at(worksheet["cells"], state.selected_cell, %{
-        cell_type: "markdown"
+      List.insert_at(worksheet["cells"], idx, %{
+        "cell_type" => cell_type,
+        "input" => [""],
+        "outputs" => [%{"text" => ""}]
       })
-      |> IO.inspect()
 
     worksheets =
       List.replace_at(state.notebook["worksheets"], state.worksheet, %{
@@ -51,7 +56,7 @@ defmodule Niex.Notebook do
   end
 
   def update_cell(state, idx, update) do
-    cell = input_cell(state.notebook, state.worksheet, idx)
+    cell = input_cell(state, idx)
 
     %{
       state
@@ -67,8 +72,8 @@ defmodule Niex.Notebook do
   end
 
   def execute_cell(state, socket, idx, input) do
-    cell = input_cell(state.notebook, state.worksheet, idx)
-    {output, bindings} = eval(socket, input, state.bindings)
+    cell = input_cell(state, idx)
+    {output, bindings} = Niex.Eval.start_link(input, state.bindings)
 
     %{
       update_cell(state, idx, %{"input" => [input], "outputs" => outputs(socket, output)})
@@ -87,15 +92,6 @@ defmodule Niex.Notebook do
 
   def outputs(_, output) do
     [%{"text" => [inspect(output)]}]
-  end
-
-  def eval(socket, input, bindings) do
-    try do
-      Code.eval_string(input, bindings, functions: [{Niex.Eval, [alias: 1]}])
-    rescue
-      err ->
-        {err, bindings}
-    end
   end
 
   def update_cell(notebook, worksheet_idx, idx, value) do

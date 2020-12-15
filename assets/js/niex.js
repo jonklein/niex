@@ -1,5 +1,5 @@
-import EasyMDE from "easymde"
-require("easymde/dist/easymde.min.css")
+import '@fortawesome/fontawesome-free/js/fontawesome'
+import '@fortawesome/fontawesome-free/js/solid'
 
 import Chartkick from "chartkick"
 import ChartJS from "chart.js"
@@ -56,7 +56,7 @@ export const hooks = {
             this.el.addEventListener("keydown", (e) => {
                 console.log(e.code)
                 if (e.metaKey && e.code === "Enter") {
-                    e.target.closest("form").querySelector("button[type='submit']").click()
+                    e.target.closest("form").querySelector("button[class='run']").click()
                 }
             })
         },

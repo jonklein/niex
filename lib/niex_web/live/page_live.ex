@@ -2,8 +2,26 @@ defmodule NiexWeb.PageLive do
   use NiexWeb, :live_view
 
   def mount(_params, _session, socket) do
-    state = Niex.State.from_file("test_notebook.niex")
-    {:ok, assign(socket, state: state)}
+    state = Niex.State.new()
+    {:ok, assign(socket, state: state, show_open_dialog: false, show_save_dialog: false)}
+  end
+
+  def handle_info({:close_open_dialog, nil}, socket) do
+    {:noreply, assign(socket, show_open_dialog: false)}
+  end
+
+  def handle_info({:close_open_dialog, path}, socket) do
+    state = Niex.State.from_file(path)
+    {:noreply, assign(socket, show_open_dialog: false, state: state)}
+  end
+
+  def handle_info({:close_save_dialog, nil}, socket) do
+    {:noreply, assign(socket, show_save_dialog: false)}
+  end
+
+  def handle_info({:close_save_dialog, path}, socket) do
+    state = %{socket.assigns[:state] | path: path}
+    {:noreply, assign(socket, show_save_dialog: false, state: state)}
   end
 
   def handle_event("focus-cell", %{"ref" => ref}, socket) do
@@ -16,12 +34,14 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-    def handle_event("execute-cell", %{"index" => cell_index, "command" => command}, socket) do
-    {idx, _} = Integer.parse(cell_index)
+  def handle_event("execute-cell", %{"ref" => ref}, socket) do
+    {idx, _} = Integer.parse(ref)
+
+    cell = Niex.Notebook.input_cell(socket.assigns[:state], idx)
 
     state =
       socket.assigns[:state]
-      |> Niex.Notebook.execute_cell(socket, idx, command)
+      |> Niex.Notebook.execute_cell(socket, idx, Enum.join(cell["input"]))
 
     {:noreply, assign(socket, state: state)}
   end
@@ -36,29 +56,38 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("update-markdown", data = %{"index" => index, "text" => value}, socket) do
+  def handle_event(
+        "update-content",
+        data = %{"index" => index, "text" => value, "cell_type" => "markdown"},
+        socket
+      ) do
     {idx, _} = Integer.parse(index)
 
     state =
       socket.assigns[:state]
-      |> Niex.Notebook.update_cell(idx, %{"source" => [value]})
+      |> Niex.Notebook.update_cell(idx, %{"source" => [value], "cell_type" => "markdown"})
+      |> IO.inspect()
 
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("update-source", data = %{"index" => index, "command" => value}, socket) do
+  def handle_event(
+        "update-content",
+        data = %{"index" => index, "text" => value, "cell_type" => "code"},
+        socket
+      ) do
     {idx, _} = Integer.parse(index)
 
     state =
       socket.assigns[:state]
-      |> Niex.Notebook.update_cell(idx, %{"input" => [value]})
+      |> Niex.Notebook.update_cell(idx, %{"input" => [value], "cell_type" => "code"})
 
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("add-cell", %{"ref" => index}, socket) do
-    {idx, _} = Integer.parse(index)
-    {:noreply, assign(socket, state: Niex.Notebook.add_cell(socket.assigns[:state]))}
+  def handle_event("add-cell", %{"type" => type}, socket) do
+    IO.inspect("Adding #{type}")
+    {:noreply, assign(socket, state: Niex.Notebook.add_cell(socket.assigns[:state], type))}
   end
 
   def handle_event("remove-cell", %{"ref" => index}, socket) do
@@ -67,7 +96,15 @@ defmodule NiexWeb.PageLive do
   end
 
   def handle_event("save", %{}, socket) do
-    {:noreply, assign(socket, state: Niex.State.save(socket.assigns[:state]))}
+    socket =
+      if(
+        socket.assigns[:state].path,
+        do: assign(socket, state: Niex.State.save(socket.assigns[:state])),
+        else: assign(socket, show_save_dialog: true)
+      )
+
+    IO.inspect(socket.assigns)
+    {:noreply, socket}
   end
 
   def handle_event("update-title", %{"title" => title}, socket) do

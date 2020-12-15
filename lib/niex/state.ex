@@ -8,6 +8,25 @@ defmodule Niex.State do
     dirty: false
   )
 
+  def new() do
+    %Niex.State{
+      notebook: %{
+        "metadata" => %{},
+        "worksheets" => [
+          %{
+            "cells" => [
+              %{
+                "cell_type" => "code",
+                "input" => ["IO.puts(\"hello, world\")"],
+                "outputs" => [%{"text" => ""}]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  end
+
   def from_file(path) do
     %{from_string(File.read!(path)) | path: path}
   end

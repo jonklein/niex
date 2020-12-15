@@ -6,31 +6,47 @@ Niex is an web-based, interactive Elixir notebook built with Phoenix LiveView.
  
 Niex is 
 
+## Getting Started
+
+There are two main ways to run Niex: as a standalone Phoenix app, or embedded as a dependency in your own code base. 
+
+### Running standalone
+
+If you're looking to get started quickly with Niex, you can clone the Niex repo from GitHub and run as a simple 
+Phoenix app:
+
+```
+git clone ...
+cd niex
+mix phx.server
+```
+
+### Embedding in your project
+
+If you'd like to use Niex in your own Elixir project, and use your own code in notebooks, you can install Niex as a 
+dependency:
+
+```
+
+```
+
 ### Why Niex?
 
-The excellent [Jupyter](https://jupyter.org/) project is already capable of supporting other language backends, 
+You may note that the powerful, full-featured [Jupyter](https://jupyter.org/) project is already capable of supporting other language backends, 
 including Elixir, so what's the advantage of using Niex for an interactive Elixir notebook?
 
-- Embeddable
-The primary advantage of Niex is that it's easily embedable in your own Elixir project so that you can easily use it 
+- Embeddable - Niex is easily embedable in your own Elixir project so that you can easily use it 
 as a development and exploration workspace for your own code.   
 
-- Simple 
-Niex offers a simple Phoenix/Elixir app to get up and running quickly & easily or to deploy however you prefer to 
+- Simple - Niex offers a simple Phoenix/Elixir app to get up and running quickly & easily or to deploy however you prefer to 
 deploy your Phoenix apps. 
 
 - Lightweight
 
 Niex is extremely lightweight
 
-- Written in Elixir
-
-Finally, Niex is written in native Elixir, so it integrates easily with your existing Elixir project & libraries. 
-It's simple to customize and extend for Elixir-based use-cases.
-
-## Getting Started - Running Niex Standalone
-
-## Getting Started - Embedded in a Phoenix App 
+- Written in native Elixir, so it integrates easily with your existing Elixir project and lets you use your own code 
+in notebooks
 
 ## This is a Prerelease 
 

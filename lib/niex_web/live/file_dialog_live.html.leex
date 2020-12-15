@@ -1,1 +1,31 @@
-File Dialog
+<div class="niex modal">
+    <div class="file-dialog">
+        <h2><%= @title %></h2>
+        <h4>
+            <%= for {component, path} <- @paths do %>
+            <a class="path" phx-click="select" phx-value-path='<%= path %>'><%= component %></a>
+            <% end %>
+            <form phx-change="update-filename">
+                <input class="new_filename" type="text" value="<%= @filename %>"
+                       name="filename"/>
+            </form>
+        </h4>
+
+        <div class="files">
+            <%= for {filename, path, selectable, selected} <- @files do %>
+            <a class="file <%= !selectable && "unselectable" || "" %> <%= selected && "selected" || "" %>"
+               phx-click="select" phx-value-path='<%= path %>'><%= filename %></a>
+            <% end %>
+        </div>
+
+        <div class="buttons">
+            <button class="cancel" phx-click="open">Cancel</button>
+            <%= if @mode == "open" do %>
+                <button class="open" phx-click="open" <%= @selected == nil && "disabled" %>>Open</button>
+            <% end %>
+            <%= if @mode == "save" do %>
+                <button class="open" phx-click="save" <%= @filename == "" && "disabled" %>>Save</button>
+            <% end %>
+        </div>
+    </div>
+</div>

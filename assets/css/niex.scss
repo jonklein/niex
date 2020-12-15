@@ -2,8 +2,11 @@
   form, textarea, input {
     margin: 0px;
   }
-  button: {
-    margin: 8px;
+
+  button {
+    margin: 4px;
+    color: #333;
+    background: #ccc;
   }
 }
 
@@ -41,22 +44,135 @@
 .niex-body {
   padding-top: 80px;
 
-  .cell { position: relative; }
+  .cell {
+    position: relative;
+  }
 
-  .cell button { color: #333333; }
+  .cell button {
+    color: #333333;
+  }
 
   .cell .cell-row {
     display: flex;
-    .gutter {  width: 80px; font-family: monospace; }
-    .content { flex-grow: 1; }
+
+    .gutter {
+      width: 80px;
+      font-family: monospace;
+    }
+
+    .content {
+      flex-grow: 1;
+    }
   }
-  .cell textarea { font-family: monospace; background: #eee; border: 1px solid #ddd; }
 
-  .cell textarea { min-height: 20px; resize: none; overflow: hidden; }
+  .cell textarea {
+    font-family: monospace;
+    background: #eee;
+    border: 1px solid #ddd;
+  }
 
-  button.run {
+  .cell textarea {
+    min-height: 46px;
+    resize: none;
+    overflow: hidden;
+  }
+
+  .cell .toolbar {
     position: absolute;
     right: 8px;
     top: 8px;
+    display: flex;
+
+    button {
+      margin-left: 4px;
+      background: #ccc;
+      width: 30px;
+      height: 30px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+  }
+}
+
+
+.niex.modal {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.niex .file-dialog {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 24px;
+  width: 600px;
+  height: 500px;
+  overflow: scroll;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 1px 1px 3px #888888;
+
+  .file {
+    cursor: pointer;
+    padding: 4px;
+
+    &.unselectable {
+      color: #888888;
+      pointer-events: none;
+    }
+
+    &.selected {
+      background: #cccccc;
+      border-radius: 6px;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    margin-top: auto;
+
+    .cancel {
+      margin-left: auto
+    }
+  }
+}
+
+.dropdown {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+
+  i { font-size: 38px; margin-left: auto; }
+
+  display: inline-block;
+  position: relative;
+
+  .dropdown-items {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 8px;
+    position: absolute;
+    display: none;
+    right: 0px;
+  }
+  &:hover .dropdown-items {
+    display: block;
+
+    .item { display: block; cursor: pointer; }
   }
 }

@@ -1,20 +1,33 @@
 <div class="niex niex-header" phx-hook="NiexPage" id="niex-page">
     <form phx-change="update-title">
-        <input type="text" name="title" class="title" value="<%= @state.notebook["metadata"]["name"] %>"></input>
+        <input type="text" name="title" class="title"
+               value="<%= @state.notebook["metadata"]["name"] || Niex.Notebook.default_title %>"></input>
     </form>
     <div class="tools">
-    <button <%= !@state.dirty && "disabled" %> phx-click="save"><%= !@state.dirty && "Saved!" || "Save" %></button>
-    <button <%= !@state.selected_cell && "disabled" %> phx-click="add-cell" phx-value-ref="<%= @state.selected_cell %>">+</button>
-    <button <%= !@state.selected_cell && "disabled" %> phx-click="remove-cell" phx-value-ref="<%= @state.selected_cell %>">-</button>
+        <button <%= !@state.dirty && "disabled" %> phx-click="save"><%= !@state.dirty && "Saved!" || "Save" %></button>
+        <div class="dropdown">
+            <span>
+                <i size="50" class="fas fa-plus-square"></i>
+            </span>
+            <div class="dropdown-items">
+                <a phx-click="add-cell" phx-value-type="code" class="item">Code</a>
+                <a phx-click="add-cell" phx-value-type="markxdown" class="item">Markdown</a>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="niex niex-body" phx-hook="NiexPage" id="niex-page">
-   <section>
     <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)["cells"]) do %>
-      <p><%= Niex.Cells.render(@state, cell, i) %></p>
+    <p><%= Niex.Cells.render(@state, cell, i) %></p>
     <% end %>
-  </section>
 </div>
 
-<%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog") %>
+
+<%= if @show_open_dialog do %>
+<%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog", session: %{"mode" => "open", "reply" => "close_open_dialog", "title" => "Select a Niex Notebook", "extensions" => [".niex"]}) %>
+<% end %>
+
+<%= if @show_save_dialog do %>
+<%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog", session: %{"mode" => "save", "reply" => "close_save_dialog", "title" => "Create a new notebook", "extensions" => [".niex"]}) %>
+<% end %>
