@@ -112,9 +112,7 @@ defmodule NiexWeb.FileDialogLive do
       |> Enum.filter(&(&1 != nil))
   end
 
-  def handle_event(other, params, socket) do
-    IO.inspect(other)
-    IO.inspect(params)
+  def handle_event(_, _, socket) do
     {:noreply, socket}
   end
 
@@ -137,6 +135,9 @@ defmodule NiexWeb.FileDialogLive do
   end
 
   defp save_path(socket) do
-    Path.join(socket.assigns[:working_directory], socket.assigns[:filename])
+    Path.join(
+      socket.assigns[:working_directory],
+      socket.assigns[:filename] <> hd(socket.assigns[:extensions])
+    )
   end
 end

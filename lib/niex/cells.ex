@@ -15,7 +15,7 @@ defmodule Niex.Cells do
       <form phx-change="update-content" phx-focus="focus-cell">
         <input type="hidden" name="index" value="<%= idx %>" />
         <input type="hidden" name="cell_type" value="markdown" />
-        <textarea phx-value-ref="<%= idx %>" phx-blur="blur-cell" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= idx %>"><%= @cell["content"] %></textarea>
+        <textarea phx-value-ref="<%= idx %>" phx-blur="blur-cell" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= idx %>"><%= @cell[:content] %></textarea>
     </form>
         <div class="toolbar">
           <button class="remove" phx-click="remove-cell" phx-value-index="<%= idx %>" phx-disable-with="Removing...">

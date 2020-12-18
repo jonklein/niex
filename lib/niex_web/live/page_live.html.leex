@@ -2,7 +2,7 @@
     <div class="niex-header" phx-hook="NiexPage" id="niex-page">
         <form phx-change="update-title">
             <input type="text" name="title" class="title"
-                   value="<%= @state.notebook[:metadata][:name] %>"></input>
+                   value="<%= @state.notebook.metadata[:name] %>"></input>
         </form>
         <div class="tools">
             <button <%= @state.dirty && raw("data-confirm='The current notebook has unsaved changes - continue?'") %>
