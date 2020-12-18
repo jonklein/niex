@@ -6,9 +6,7 @@ defmodule Niex.Cells do
         assigns = %{
           idx: idx,
           state: state,
-          cell: %{
-            "cell_type" => "markdown"
-          }
+          cell: %{cell_type: "markdown"}
         }
       )
       when state.selected_cell == idx do
@@ -30,12 +28,10 @@ defmodule Niex.Cells do
   def render(
         assigns = %{
           idx: idx,
-          cell: %{
-            "cell_type" => "markdown"
-          }
+          cell: %{cell_type: "markdown"}
         }
       ) do
-    {:ok, html, _} = Earmark.as_html(Enum.join(assigns[:cell]["content"], "\n"))
+    {:ok, html, _} = Earmark.as_html(Enum.join(assigns[:cell][:content], "\n"))
 
     ~L"""
     <div class="cell markdown" phx-click="focus-cell" phx-blur="blur-cell" class="cell" phx-value-ref="<%= idx %>">
@@ -44,26 +40,20 @@ defmodule Niex.Cells do
     """
   end
 
-  def render(
-        assigns = %{
-          cell: %{
-            "cell_type" => "code"
-          }
-        }
-      ) do
+  def render(assigns = %{cell: %{cell_type: "code"}}) do
     ~L"""
       <div class="cell" phx-focus="focus-cell" phx-blur="blur-cell" phx-value-ref="<%=
       @idx
     %>">
         <div class="cell-row">
           <span class="gutter">
-            In [<%= @cell["prompt_number"] %>]:
+            In [<%= @cell[:prompt_number] %>]:
           </span>
         <span class="content">
           <form phx-submit="noop" phx-change="update-content">
            <input type="hidden" name="index" value="<%= @idx %>" />
            <input type="hidden" name="cell_type" value="code" />
-          <textarea phx-click="focus-cell" phx-value-ref="<%= @idx %>" phx-hook="NiexCodeEditor" phx-focus="focus-cell" name="text" id="cell-code-<%= @idx %>"><%= Enum.join(@cell["content"], "\n") %></textarea>
+          <textarea phx-click="focus-cell" phx-value-ref="<%= @idx %>" phx-hook="NiexCodeEditor" phx-focus="focus-cell" name="text" id="cell-code-<%= @idx %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
       </form>
               <div class="toolbar">
           <button class="run" phx-disable-with="Running..." phx-click="execute-cell" phx-value-index="<%= @idx %>">
@@ -81,7 +71,7 @@ defmodule Niex.Cells do
             Out [<%= @cell["prompt_number"] %>]:
         </span>
         <span class="content out">
-            <%= raw(Enum.join(Enum.map(@cell["outputs"], & &1["text"]), "\n")) %>
+            <%= raw(Enum.join(Enum.map(@cell[:outputs], & &1[:text]), "\n")) %>
         </span>
         </div>
       </div>

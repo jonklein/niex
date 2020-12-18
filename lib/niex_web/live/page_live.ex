@@ -35,7 +35,7 @@ defmodule NiexWeb.PageLive do
      assign(socket,
        show_open_dialog: false,
        state: state,
-       document_title: state.notebook["metadata"]["name"]
+       document_title: state.notebook[:metadata][:name]
      )}
   end
 
@@ -51,7 +51,7 @@ defmodule NiexWeb.PageLive do
       |> assign(
         show_save_dialog: false,
         state: state,
-        document_title: state.notebook["metadata"]["name"]
+        document_title: state.notebook[:metadata][:name]
       )
       |> put_temp_flash(:info, "Notebook saved!")
 

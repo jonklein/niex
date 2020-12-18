@@ -2,7 +2,7 @@
     <div class="niex-header" phx-hook="NiexPage" id="niex-page">
         <form phx-change="update-title">
             <input type="text" name="title" class="title"
-                   value="<%= @state.notebook["metadata"]["name"] %>"></input>
+                   value="<%= @state.notebook[:metadata][:name] %>"></input>
         </form>
         <div class="tools">
             <button <%= @state.dirty && raw("data-confirm='The current notebook has unsaved changes - continue?'") %>
@@ -15,7 +15,7 @@
 
     <div class="niex-body" phx-hook="NiexPage" id="niex-page">
         <%= NiexWeb.CellSeparator.render(%{index: 0}) %>
-        <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)["cells"]) do %>
+        <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)[:cells]) do %>
         <%= Niex.Cells.render(%{state: @state, cell: cell, idx: i}) %>
         <%= NiexWeb.CellSeparator.render(%{index: i + 1}) %>
     <% end %>

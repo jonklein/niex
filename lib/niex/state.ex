@@ -11,15 +11,15 @@ defmodule Niex.State do
   def new() do
     %Niex.State{
       notebook: %{
-        "metadata" => %{"name" => "Untitled Notebook"},
-        "worksheets" => [
+        metadata: %{name: "Untitled Notebook"},
+        worksheets: [
           %{
-            "cells" => [
+            cells: [
               %{
-                "prompt_number" => 0,
-                "cell_type" => "code",
-                "content" => ["IO.puts(\"hello, world\")"],
-                "outputs" => [%{"text" => ""}]
+                prompt_number: 0,
+                cell_type: "code",
+                content: ["IO.puts(\"hello, world\")"],
+                outputs: [%{"text" => ""}]
               }
             ]
           }
@@ -33,7 +33,7 @@ defmodule Niex.State do
   end
 
   def from_string(str) do
-    %Niex.State{notebook: Jason.decode!(str)}
+    %Niex.State{notebook: Jason.decode!(str, keys: :atoms)}
   end
 
   def save(state, path) do
@@ -53,6 +53,6 @@ defmodule Niex.State do
   end
 
   def active_worksheet(state) do
-    Enum.at(state.notebook["worksheets"], state.worksheet)
+    Enum.at(state.notebook[:worksheets], state.worksheet)
   end
 end
