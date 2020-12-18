@@ -4,19 +4,22 @@ defmodule NiexWeb.FileDialogLive do
   def mount(_params, session, socket) do
     wd = File.cwd!()
 
-    {:ok,
-     assign(socket,
-       selected: nil,
-       working_directory: wd,
-       title: session["title"],
-       mode: session["mode"],
-       reply: session["reply"],
-       extensions: session["extensions"],
-       paths: link_path(wd),
-       filename: "Untitled",
-       file_exists: false,
-       files: files(socket, wd, session["mode"], session["extensions"])
-     )}
+    {
+      :ok,
+      assign(
+        socket,
+        selected: nil,
+        working_directory: wd,
+        title: session["title"],
+        mode: session["mode"],
+        reply: session["reply"],
+        extensions: session["extensions"],
+        paths: link_path(wd),
+        filename: "Untitled",
+        file_exists: false,
+        files: files(socket, wd, session["mode"], session["extensions"])
+      )
+    }
   end
 
   def handle_event("cancel", %{}, socket) do
@@ -45,10 +48,12 @@ defmodule NiexWeb.FileDialogLive do
   def handle_event("update-filename", %{"filename" => filename}, socket) do
     socket = assign(socket, filename: filename)
 
-    {result, _} = File.stat(save_path(socket))
-    file_exists = result == :ok
+    {:noreply, assign(socket, file_exists: exists?(save_path(socket)))}
+  end
 
-    {:noreply, assign(socket, file_exists: file_exists)}
+  def exists?(path) do
+    {result, _} = File.stat(path)
+    result == :ok
   end
 
   def handle_event("select", %{"path" => path}, socket) do
@@ -58,43 +63,53 @@ defmodule NiexWeb.FileDialogLive do
   end
 
   def select_path(:directory, path, socket) do
-    {:noreply,
-     assign(socket,
-       selected: nil,
-       working_directory: path,
-       paths: link_path(path),
-       files: files(socket, path, socket.assigns[:mode], socket.assigns[:extensions])
-     )}
+    {
+      :noreply,
+      assign(
+        socket,
+        selected: nil,
+        working_directory: path,
+        paths: link_path(path),
+        files: files(socket, path, socket.assigns[:mode], socket.assigns[:extensions])
+      )
+    }
   end
 
   def select_path(:regular, path, socket) do
     socket = assign(socket, selected: path)
 
-    {:noreply,
-     assign(socket,
-       files:
-         files(
-           socket,
-           socket.assigns[:working_directory],
-           socket.assigns[:mode],
-           socket.assigns[:extensions]
-         )
-     )}
+    {
+      :noreply,
+      assign(
+        socket,
+        files:
+          files(
+            socket,
+            socket.assigns[:working_directory],
+            socket.assigns[:mode],
+            socket.assigns[:extensions]
+          )
+      )
+    }
   end
 
   def files(socket, path, mode, extensions) do
     files =
       File.ls!(path)
+      |> Enum.sort()
       |> Enum.map(fn file ->
         filepath = Path.join(path, file)
-        {:ok, stat} = File.stat(filepath)
+        {result, stat} = File.stat(filepath)
 
-        selectable =
-          stat.type == :directory ||
-            (mode == "open" && Enum.find(extensions, &(&1 == Path.extname(file))))
+        if result == :ok do
+          selectable =
+            stat.type == :directory ||
+              (mode == "open" && Enum.find(extensions, &(&1 == Path.extname(file))))
 
-        {file, Jason.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
+          {file, Jason.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
+        end
       end)
+      |> Enum.filter(&(&1 != nil))
   end
 
   def handle_event(other, params, socket) do

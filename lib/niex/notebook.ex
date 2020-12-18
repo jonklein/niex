@@ -11,22 +11,26 @@ defmodule Niex.Notebook do
     %{state | dirty: true, notebook: %{state.notebook | "metadata" => metadata}}
   end
 
-  def add_cell(state, cell_type) do
+  def add_cell(state, cell_type, idx) do
     worksheet = Enum.at(state.notebook["worksheets"], state.worksheet)
 
-    idx = state.selected_cell || length(worksheet["cells"])
+    prompt_number =
+      Enum.slice(worksheet["cells"], 0, idx)
+      |> Enum.filter(&(&1["cell_type"] == cell_type))
+      |> length
 
     cells =
       List.insert_at(worksheet["cells"], idx, %{
+        "prompt_number" => prompt_number,
         "cell_type" => cell_type,
-        "input" => [""],
+        "content" => [default_content(cell_type)],
         "outputs" => [%{"text" => ""}]
       })
 
     worksheets =
       List.replace_at(state.notebook["worksheets"], state.worksheet, %{
         worksheet
-        | "cells" => cells
+        | "cells" => renumber_code_cells(cells)
       })
 
     %{
@@ -44,7 +48,7 @@ defmodule Niex.Notebook do
     worksheets =
       List.replace_at(state.notebook["worksheets"], state.worksheet, %{
         worksheet
-        | "cells" => cells
+        | "cells" => renumber_code_cells(cells)
       })
 
     %{
@@ -71,12 +75,12 @@ defmodule Niex.Notebook do
     }
   end
 
-  def execute_cell(state, socket, idx, input) do
+  def execute_cell(state, socket, idx) do
     cell = input_cell(state, idx)
-    {output, bindings} = Niex.Eval.start_link(input, state.bindings)
+    {output, bindings} = Niex.Eval.start_link(Enum.join(cell["content"], "\n"), state.bindings)
 
     %{
-      update_cell(state, idx, %{"input" => [input], "outputs" => outputs(socket, output)})
+      update_cell(state, idx, %{"outputs" => outputs(socket, output)})
       | bindings: bindings
     }
   end
@@ -109,5 +113,26 @@ defmodule Niex.Notebook do
             }
           )
     }
+  end
+
+  defp renumber_code_cells(list, idx \\ 0)
+
+  defp renumber_code_cells([first | rest], idx) do
+    if first["cell_type"] == "code" do
+      [%{first | "prompt_number" => idx} | renumber_code_cells(rest, idx + 1)]
+    else
+      [first | renumber_code_cells(rest, idx)]
+    end
+  end
+
+  defp renumber_code_cells([], _) do
+    []
+  end
+
+  defp default_content("code") do
+  end
+
+  defp default_content("markdown") do
+    "# Header\ncontent"
   end
 end

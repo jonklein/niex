@@ -11,13 +11,14 @@ defmodule Niex.State do
   def new() do
     %Niex.State{
       notebook: %{
-        "metadata" => %{},
+        "metadata" => %{"name" => "Untitled Notebook"},
         "worksheets" => [
           %{
             "cells" => [
               %{
+                "prompt_number" => 0,
                 "cell_type" => "code",
-                "input" => ["IO.puts(\"hello, world\")"],
+                "content" => ["IO.puts(\"hello, world\")"],
                 "outputs" => [%{"text" => ""}]
               }
             ]

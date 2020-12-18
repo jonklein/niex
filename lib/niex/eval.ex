@@ -1,54 +1,47 @@
-defmodule Niex.Capture do
+defmodule Niex.IOCapture do
   def start_link() do
     Task.async(__MODULE__, :capture, [])
   end
 
-  def capture() do
-    IO.puts("Capturing...")
-
+  def capture(io \\ "") do
     receive do
-      {:io_request, pid, reply_as, data} ->
-        IO.inspect("Got: #{inspect(data)}")
+      {:io_request, pid, reply_as, {:put_chars, _, string}} ->
+        # IO - capture string and listen some more
         send(pid, {:io_reply, reply_as, :ok})
-        :ok
+        capture(io <> string)
 
-      other ->
-        IO.inspect(other)
+      {:shutdown, pid} ->
+        # shutdown message - send back captured io
+        send(pid, {:output, io})
+
+      _ ->
+        capture(io)
     end
-
-    capture
   end
 end
 
 defmodule Niex.Eval do
-  import Kernel, except: [alias: 1]
-
   def start_link(cmd, bindings) do
     Task.async(__MODULE__, :run, [cmd, bindings])
     |> Task.await()
-    |> IO.inspect()
   end
 
   def run(cmd, bindings) do
     try do
-      task = Niex.Capture.start_link()
+      task = Niex.IOCapture.start_link()
       Process.group_leader(self(), task.pid)
       result = Code.eval_string(cmd, bindings)
-      Task.shutdown(task)
+      send(task.pid, {:shutdown, self()})
+
+      stdout =
+        receive do
+          {:output, o} -> o
+        end
 
       result
     rescue
       err ->
         {err, bindings}
     end
-  end
-
-  def xalias(x) do
-    x |> IO.inspect()
-    123
-  end
-
-  def test(x) do
-    IO.inspect(x)
   end
 end

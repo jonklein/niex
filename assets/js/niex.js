@@ -56,7 +56,7 @@ export const hooks = {
             this.el.addEventListener("keydown", (e) => {
                 console.log(e.code)
                 if (e.metaKey && e.code === "Enter") {
-                    e.target.closest("form").querySelector("button[class='run']").click()
+                    e.target.closest(".content").querySelector("button[class='run']").click()
                 }
             })
         },

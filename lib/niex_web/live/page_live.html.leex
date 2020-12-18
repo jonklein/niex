@@ -1,34 +1,31 @@
-<div class="niex niex-header" phx-hook="NiexPage" id="niex-page">
-    <form phx-change="update-title">
-        <input type="text" name="title" class="title"
-               value="<%= @state.notebook["metadata"]["name"] || Niex.Notebook.default_title %>"></input>
-    </form>
-    <div class="tools">
-        <button <%= @state.dirty && raw("data-confirm='The current notebook has unsaved changes - continue?'") %> phx-click="open">Open</button>
-        <button <%= !@state.dirty && "disabled" %> phx-click="save"><%= !@state.dirty && "Saved!" || "Save" %></button>
-        <div class="dropdown">
-            <span>
-                <i size="50" class="fas fa-plus-square"></i>
-            </span>
-            <div class="dropdown-items">
-                <a phx-click="add-cell" phx-value-type="code" class="item">Code</a>
-                <a phx-click="add-cell" phx-value-type="markdown" class="item">Markdown</a>
-            </div>
+<div class="niex">
+    <div class="niex-header" phx-hook="NiexPage" id="niex-page">
+        <form phx-change="update-title">
+            <input type="text" name="title" class="title"
+                   value="<%= @state.notebook["metadata"]["name"] %>"></input>
+        </form>
+        <div class="tools">
+            <button <%= @state.dirty && raw("data-confirm='The current notebook has unsaved changes - continue?'") %>
+                    phx-click="open">Open
+            </button>
+            <button <%= !@state.dirty && "disabled" %>
+                    phx-click="save"><%= !@state.dirty && "Saved!" || "Save" %></button>
         </div>
     </div>
-</div>
 
-<div class="niex niex-body" phx-hook="NiexPage" id="niex-page">
-    <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)["cells"]) do %>
-    <p><%= Niex.Cells.render(%{state: @state, cell: cell, idx: i}) %></p>
+    <div class="niex-body" phx-hook="NiexPage" id="niex-page">
+        <%= NiexWeb.CellSeparator.render(%{index: 0}) %>
+        <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)["cells"]) do %>
+        <%= Niex.Cells.render(%{state: @state, cell: cell, idx: i}) %>
+        <%= NiexWeb.CellSeparator.render(%{index: i + 1}) %>
     <% end %>
+    </div>
+
+    <%= if @show_open_dialog do %>
+    <%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog", session: %{"mode" => "open", "reply" => "close_open_dialog", "title" => "Select a Niex Notebook", "extensions" => [".niex"]}) %>
+<% end %>
+
+    <%= if @show_save_dialog do %>
+    <%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog", session: %{"mode" => "save", "reply" => "close_save_dialog", "title" => "Create a new notebook", "extensions" => [".niex"]}) %>
+<% end %>
 </div>
-
-
-<%= if @show_open_dialog do %>
-<%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog", session: %{"mode" => "open", "reply" => "close_open_dialog", "title" => "Select a Niex Notebook", "extensions" => [".niex"]}) %>
-<% end %>
-
-<%= if @show_save_dialog do %>
-<%= live_render(@socket, NiexWeb.FileDialogLive, id: "file-dialog", session: %{"mode" => "save", "reply" => "close_save_dialog", "title" => "Create a new notebook", "extensions" => [".niex"]}) %>
-<% end %>

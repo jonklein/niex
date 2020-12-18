@@ -1,9 +1,9 @@
 <div class="niex modal">
     <div class="file-dialog">
-        <h2><%= @title %></h2>
-        <h4>
+        <h3><%= @title %></h3>
+        <div class="path">
             <%= for {component, path} <- @paths do %>
-            <a class="path" phx-click="select" phx-value-path='<%= path %>'><%= component %></a>
+            <a phx-click="select" phx-value-path='<%= path %>'><%= component %></a>
             <% end %>
             <%= if @mode == "save" do %>
             <form phx-change="update-filename">
@@ -11,7 +11,7 @@
                        name="filename"/>
             </form>
             <% end %>
-        </h4>
+        </div>
 
         <div class="files">
             <%= for {filename, path, selectable, selected} <- @files do %>

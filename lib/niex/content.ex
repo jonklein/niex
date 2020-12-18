@@ -5,8 +5,19 @@ defmodule Niex.Content do
     %Niex.Content{type: "image", content: url}
   end
 
+  """
+  Renders a chart using the Chartkick library.
+  """
+
   def chart(type, data, options \\ []) do
-    %Niex.Content{type: "chart", content: %{type: type, data: data, options: Enum.into(options, %{})}}
+    %Niex.Content{
+      type: "chart",
+      content: %{type: type, data: data, options: Enum.into(options, %{})}
+    }
+  end
+
+  def line_chart(type, data, options \\ []) do
+    chart("LineChart", data, options)
   end
 
   def render(%Niex.Content{type: "chart", content: data}) do
