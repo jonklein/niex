@@ -1,18 +1,21 @@
 defmodule Niex.Notebook do
-  @derive Jason.Encoder
-
-  @moduledoc
+  @moduledoc """
+  Interface to the Notebook data.  Generally not used directly - instead, use the
+  functions in Niex.State to manipute the full app state including the notebook.
+  """
 
   defstruct(
-    version: "1.0",
     worksheets: [%{cells: []}],
-    metadata: %{name: ""}
+    metadata: %{name: "", version: "1.0"}
   )
 
   def default_title do
     "Untitled Notebook"
   end
 
+  @doc """
+  Updates the notebook metadata which contains `name` and `version` strings.
+  """
   def update_metadata(notebook, metadata) do
     %{notebook | metadata: metadata}
   end
@@ -56,7 +59,6 @@ defmodule Niex.Notebook do
   def execute_cell(notebook, worksheet, idx, bindings) do
     {output, bindings} =
       Niex.Eval.start_link(Enum.join(cell(notebook, worksheet, idx)[:content], "\n"), bindings)
-      |> IO.inspect()
 
     {update_cell(notebook, worksheet, idx, %{outputs: outputs(output)}), bindings}
   end

@@ -1,14 +1,19 @@
 defmodule Niex.Content do
   defstruct(content: nil, type: nil)
 
+  @doc """
+  Returns content for a cell containing an image at the provided `url`.
+  """
   def image(url) do
     %Niex.Content{type: "image", content: url}
   end
 
-  """
-  Renders a chart using the Chartkick library.
-  """
+  @doc """
+  Returns content for a cell containing a chart using the Chartkick library.
 
+  The `type` of the chart corresponds to the chart type as shown in the
+  [ChartKick docs](https://github.com/ankane/chartkick.js).
+  """
   def chart(type, data, options \\ []) do
     %Niex.Content{
       type: "chart",
@@ -16,13 +21,9 @@ defmodule Niex.Content do
     }
   end
 
-  def line_chart(type, data, options \\ []) do
-    chart("LineChart", data, options)
-  end
-
   def render(%Niex.Content{type: "chart", content: data}) do
     """
-    <div phx-hook="NiexChart" data-chart='#{Jason.encode!(data)}' id="#{UUID.uuid4()}}" />
+    <div phx-hook="NiexChart" data-chart='#{Poison.encode!(data)}' id="#{UUID.uuid4()}}" />
     """
   end
 

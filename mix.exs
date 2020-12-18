@@ -34,8 +34,6 @@ defmodule Niex.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.7"},
-      {:phoenix_ecto, "~> 4.1"},
-      {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.15.0", override: true},
       {:floki, ">= 0.27.0", only: :test},
@@ -44,9 +42,8 @@ defmodule Niex.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
+      {:poison, "~> 3.1.0"},
       {:earmark, "~> 1.4.13"},
-      {:contex, "~> 0.3.0"},
       {:uuid, "~> 1.1.8"},
       {:plug_cowboy, "~> 2.0"}
     ]
@@ -61,7 +58,7 @@ defmodule Niex.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "cmd npm install --prefix assets"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: ["test"]
     ]
   end
 end

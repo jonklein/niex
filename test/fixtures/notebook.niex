@@ -1,0 +1,1 @@
+{"metadata":{"name":"Notebook File Fixture","version":"1.0"},"worksheets":[{"cells":[{"cell_type":"code","content":["IO.inspect(\"hello, world\")"],"outputs":[{"text":""}],"prompt_number":0}]}]}

@@ -34,7 +34,7 @@ defmodule Niex.State do
   end
 
   def from_string(str) do
-    %Niex.State{notebook: Jason.decode!(str, keys: :atoms)}
+    %Niex.State{notebook: Poison.decode!(str, keys: :atoms, as: %Niex.Notebook{})}
   end
 
   def save(state, path) do
@@ -42,7 +42,7 @@ defmodule Niex.State do
   end
 
   def save(state = %Niex.State{path: path}) when not is_nil(path) do
-    :ok = File.write(path, Jason.encode!(state.notebook))
+    :ok = File.write(path, Poison.encode!(state.notebook))
     %{state | dirty: false}
   end
 

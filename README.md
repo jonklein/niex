@@ -48,7 +48,23 @@ Niex is extremely lightweight
 - Written in native Elixir, so it integrates easily with your existing Elixir project and lets you use your own code 
 in notebooks
 
-## This is a Prerelease 
+## Notebook format
 
-## Warning - Remote Code Execution
+Notebooks are stored in a JSON format generally inspired by the Jupyter notebook format, but greatly simplified.  
+
+Sample notebook:
+
+```
+{
+  "version": "1.0",
+  "metadata": { "name": "New Notebook" },
+  "worksheets": {
+  } 
+}
+
+```
+
+## Security warning - arbitrary code execution
+
+This software enables arbitrary code execution *by design* 
 

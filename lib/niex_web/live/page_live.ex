@@ -78,7 +78,7 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("blur-cell", data = %{"ref" => ref}, socket) do
+  def handle_event("blur-cell", %{"ref" => ref}, socket) do
     {idx, _} = Integer.parse(ref)
 
     state =
@@ -90,7 +90,7 @@ defmodule NiexWeb.PageLive do
 
   def handle_event(
         "update-content",
-        data = %{"index" => index, "text" => value, "cell_type" => "markdown"},
+        %{"index" => index, "text" => value, "cell_type" => "markdown"},
         socket
       ) do
     {idx, _} = Integer.parse(index)
@@ -104,7 +104,7 @@ defmodule NiexWeb.PageLive do
 
   def handle_event(
         "update-content",
-        data = %{"index" => index, "text" => value, "cell_type" => "code"},
+        %{"index" => index, "text" => value, "cell_type" => "code"},
         socket
       ) do
     {idx, _} = Integer.parse(index)
