@@ -21,27 +21,42 @@ defmodule Niex.IOCapture do
 end
 
 defmodule Niex.Eval do
-  def start_link(cmd, bindings) do
-    Task.async(__MODULE__, :run, [cmd, bindings])
-    |> Task.await()
+  @doc """
+  A utility function to capture stdout from a function call.  Returns the
+  tuple of `{result, stdout}`.  If an exception is raised in the function, it
+  is re-raised here.
+  """
+  def capture_stdout(f) do
+    result = Task.async(__MODULE__, :do_capture, [f]) |> Task.await()
+
+    case result do
+      {:ok, result, stdout} ->
+        {result, stdout}
+
+      {:error, err, stdout} ->
+        raise err
+    end
   end
 
-  def run(cmd, bindings) do
-    try do
-      task = Niex.IOCapture.start_link()
-      Process.group_leader(self(), task.pid)
-      result = Code.eval_string(cmd, bindings)
-      send(task.pid, {:shutdown, self()})
+  def do_capture(f) do
+    task = Niex.IOCapture.start_link()
+    Process.group_leader(self(), task.pid)
 
-      stdout =
-        receive do
-          {:output, o} -> o
-        end
+    {status, result} =
+      try do
+        {:ok, f.()}
+      rescue
+        err ->
+          {:error, err}
+      end
 
-      result
-    rescue
-      err ->
-        {err, bindings}
-    end
+    send(task.pid, {:shutdown, self()})
+
+    stdout =
+      receive do
+        {:output, o} -> o
+      end
+
+    {status, result, stdout}
   end
 end

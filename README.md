@@ -1,10 +1,9 @@
 # Niex
 
-Niex is an web-based, interactive Elixir notebook built with Phoenix LiveView.
+Niex is an interactive Elixir code notebook built with Phoenix LiveView.
 
- ~~ demo ~~
- 
-Niex is 
+![An animation of a Niex notebook  in action](https://github.com/jonklein/niex/blob/master/sample_notebooks/demo.gif?raw=true)
+
 
 ## Getting Started
 
@@ -16,10 +15,12 @@ If you're looking to get started quickly with Niex, you can clone the Niex repo 
 Phoenix app:
 
 ```
-git clone ...
+git clone https://github.com/jonklein/niex.git
 cd niex
 mix phx.server
 ```
+
+Then open `http://localhost:4000` to use the notebook.
 
 ### Embedding in your project
 

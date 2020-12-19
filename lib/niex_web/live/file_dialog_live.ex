@@ -106,7 +106,7 @@ defmodule NiexWeb.FileDialogLive do
             stat.type == :directory ||
               (mode == "open" && Enum.find(extensions, &(&1 == Path.extname(file))))
 
-          {file, Jason.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
+          {file, Poison.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
         end
       end)
       |> Enum.filter(&(&1 != nil))
@@ -123,7 +123,7 @@ defmodule NiexWeb.FileDialogLive do
   defp components_with_paths([component | rest], root, separator) do
     dir = Path.join(root, component)
     name = if(component == separator, do: component, else: component <> separator)
-    [{name, Jason.encode!(dir)} | components_with_paths(rest, dir, separator)]
+    [{name, Poison.encode!(dir)} | components_with_paths(rest, dir, separator)]
   end
 
   defp components_with_paths([], _, _) do

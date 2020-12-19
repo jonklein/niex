@@ -108,7 +108,6 @@ defmodule NiexWeb.PageLive do
         socket
       ) do
     {idx, _} = Integer.parse(index)
-    value |> IO.inspect()
 
     state =
       socket.assigns[:state]

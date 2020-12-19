@@ -1,6 +1,6 @@
 <div class="niex">
     <div class="niex-header" phx-hook="NiexPage" id="niex-page">
-        <form phx-change="update-title">
+        <form phx-change="update-title" phx-submit="noop">
             <input type="text" name="title" class="title"
                    value="<%= @state.notebook.metadata[:name] %>"></input>
         </form>

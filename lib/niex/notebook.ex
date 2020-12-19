@@ -57,8 +57,18 @@ defmodule Niex.Notebook do
   Executes the Elixir code cell of a `notebook` worksheet at `worksheet_idx` at the provided `index`
   """
   def execute_cell(notebook, worksheet, idx, bindings) do
+    cmd = Enum.join(cell(notebook, worksheet, idx)[:content], "\n")
+
     {output, bindings} =
-      Niex.Eval.start_link(Enum.join(cell(notebook, worksheet, idx)[:content], "\n"), bindings)
+      try do
+        # currently not using stdout - may capture & display in the future
+        {result, _} = Niex.Eval.capture_stdout(fn -> Code.eval_string(cmd, bindings) end)
+
+        result
+      rescue
+        err ->
+          {err, bindings}
+      end
 
     {update_cell(notebook, worksheet, idx, %{outputs: outputs(output)}), bindings}
   end
