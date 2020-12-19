@@ -33,7 +33,7 @@ defmodule Niex.Eval do
       {:ok, result, stdout} ->
         {result, stdout}
 
-      {:error, err, stdout} ->
+      {:error, err, _} ->
         raise err
     end
   end

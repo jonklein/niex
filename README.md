@@ -1,37 +1,11 @@
-# Niex
+# Niex - Interactive Elixir Code Notebooks
 
-Niex is an interactive Elixir code notebook built with Phoenix LiveView.
+Niex is an interactive Elixir code notebook built with Phoenix LiveView with support for embedded media and 
+charting.  Niex stores your data & code in persistent, interactive notebooks, making it  great for scientific and data analysis applications using Elixir, or for sharing interactive demos of your Elixir code. 
 
 ![An animation of a Niex notebook  in action](https://github.com/jonklein/niex/blob/master/sample_notebooks/demo.gif?raw=true)
 
-
-## Getting Started
-
-There are two main ways to run Niex: as a standalone Phoenix app, or embedded as a dependency in your own code base. 
-
-### Running standalone
-
-If you're looking to get started quickly with Niex, you can clone the Niex repo from GitHub and run as a simple 
-Phoenix app:
-
-```
-git clone https://github.com/jonklein/niex.git
-cd niex
-mix phx.server
-```
-
-Then open `http://localhost:4000` to use the notebook.
-
-### Embedding in your project
-
-If you'd like to use Niex in your own Elixir project, and use your own code in notebooks, you can install Niex as a 
-dependency:
-
-```
-
-```
-
-### Why Niex?
+## Why Niex?
 
 You may note that the powerful, full-featured [Jupyter](https://jupyter.org/) project is already capable of supporting other language backends, 
 including Elixir, so what's the advantage of using Niex for an interactive Elixir notebook?
@@ -49,6 +23,57 @@ Niex is extremely lightweight
 - Written in native Elixir, so it integrates easily with your existing Elixir project and lets you use your own code 
 in notebooks
 
+## Getting Started
+
+There are two main ways to run Niex: as a standalone Phoenix app, or embedded as a dependency in your own code base. 
+
+### Running Niex standalone server
+
+If you're looking to get started quickly with Niex, you can clone the Niex repo from GitHub and run as a simple 
+Phoenix app:
+
+```
+git clone https://github.com/jonklein/niex.git
+cd niex
+mix phx.server
+```
+
+Then open `http://localhost:4000` to use the notebook.
+
+### Embedding Niex in your own Elixir project
+
+If you'd like to use Niex in your own Elixir project, and use your own codebase in your notebooks, you can install 
+Niex as a dependency:
+
+```
+  defp deps do
+    [
+       {:niex, git: "https://github.com/jonklein/niex"}
+    ]
+  end
+```
+
+You will then need to configure Niex in your `config.exs` with a minimal Phoenix configuration:
+
+```
+config :phoenix, :json_library, Poison
+
+# Configures the endpoint
+config :niex, NiexWeb.Endpoint,
+  pubsub_server: Niex.PubSub,
+  live_view: [signing_salt: "xxxxxxxxx"],
+  secret_key_base: "xxxxxxxxxx",
+  server: true,
+  debug_errors: true,
+  check_origin: false,
+  http: [port: 3333],
+  debug_errors: true,
+  check_origin: false
+```
+
+Note: Though Niex uses Phoenix and LiveView, it runs as its own server on its own port and can be run happily alongside
+your own Phoenix app. 
+
 ## Notebook format
 
 Notebooks are stored in a JSON format generally inspired by the Jupyter notebook format, but greatly simplified.  
@@ -57,15 +82,33 @@ Sample notebook:
 
 ```
 {
-  "version": "1.0",
-  "metadata": { "name": "New Notebook" },
+  "metadata": { "name": "New Notebook", "version": "1.0" },
   "worksheets": {
+    "cells": [
+      %{
+        "cell_type": "markdown",
+        "content": ["# Welcome to Niex"]
+      }, %{
+        "cell_type": "code",
+        "content": ["IO.inspect(\"123\")"],
+        "output": [{"text" => 123}]
+      }
+    ],
   } 
 }
 
 ```
 
-## Security warning - arbitrary code execution
+## Known issues / future improvements 
 
-This software enables arbitrary code execution *by design* 
+- executed code is *not* sandboxed - see section below on arbitrary code execution
+- `alias`, `import` and `use` do not function as expected in the notebook
+- future work - add support for other media types
+- future work - add support custom Live components in cells
+
+## Warning - arbitrary code execution
+
+This software enables arbitrary code execution *by design* – is for *development and local use only*.  If you
+choose expose any Niex functionality is available over a network, you are responsible for
+implementing the necessary authorization and access controls. 
 

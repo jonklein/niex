@@ -51,18 +51,22 @@ defmodule NiexWeb.FileDialogLive do
     {:noreply, assign(socket, file_exists: exists?(save_path(socket)))}
   end
 
-  def exists?(path) do
-    {result, _} = File.stat(path)
-    result == :ok
-  end
-
   def handle_event("select", %{"path" => path}, socket) do
-    path = Jason.decode!(path)
+    path = Poison.decode!(path)
     {:ok, stat} = File.stat(path)
     select_path(stat.type, path, socket)
   end
 
-  def select_path(:directory, path, socket) do
+  def handle_event(_, _, socket) do
+    {:noreply, socket}
+  end
+
+  defp exists?(path) do
+    {result, _} = File.stat(path)
+    result == :ok
+  end
+
+  defp select_path(:directory, path, socket) do
     {
       :noreply,
       assign(
@@ -75,7 +79,7 @@ defmodule NiexWeb.FileDialogLive do
     }
   end
 
-  def select_path(:regular, path, socket) do
+  defp select_path(:regular, path, socket) do
     socket = assign(socket, selected: path)
 
     {
@@ -93,31 +97,26 @@ defmodule NiexWeb.FileDialogLive do
     }
   end
 
-  def files(socket, path, mode, extensions) do
-    files =
-      File.ls!(path)
-      |> Enum.sort()
-      |> Enum.map(fn file ->
-        filepath = Path.join(path, file)
-        {result, stat} = File.stat(filepath)
+  defp files(socket, path, mode, extensions) do
+    File.ls!(path)
+    |> Enum.sort()
+    |> Enum.map(fn file ->
+      filepath = Path.join(path, file)
+      {result, stat} = File.stat(filepath)
 
-        if result == :ok do
-          selectable =
-            stat.type == :directory ||
-              (mode == "open" && Enum.find(extensions, &(&1 == Path.extname(file))))
+      if result == :ok do
+        selectable =
+          stat.type == :directory ||
+            (mode == "open" && Enum.find(extensions, &(&1 == Path.extname(file))))
 
-          {file, Poison.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
-        end
-      end)
-      |> Enum.filter(&(&1 != nil))
-  end
-
-  def handle_event(_, _, socket) do
-    {:noreply, socket}
+        {file, Poison.encode!(filepath), selectable, filepath == socket.assigns[:selected]}
+      end
+    end)
+    |> Enum.filter(&(&1 != nil))
   end
 
   defp link_path(wd) do
-    components_with_paths(Path.split(wd), Enum.at(Path.split(wd), 0), separator)
+    components_with_paths(Path.split(wd), Enum.at(Path.split(wd), 0), path_separator())
   end
 
   defp components_with_paths([component | rest], root, separator) do
@@ -130,8 +129,8 @@ defmodule NiexWeb.FileDialogLive do
     []
   end
 
-  defp separator do
-    separator = Enum.at(Path.split(File.cwd!()), 0)
+  defp path_separator do
+    Enum.at(Path.split(File.cwd!()), 0)
   end
 
   defp save_path(socket) do

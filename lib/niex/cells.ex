@@ -90,7 +90,7 @@ defmodule Niex.Cells do
     """
   end
 
-  def render(state, _, idx) do
+  def render(_, _, _) do
     ""
   end
 end

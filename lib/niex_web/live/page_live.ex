@@ -78,9 +78,7 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("blur-cell", %{"ref" => ref}, socket) do
-    {idx, _} = Integer.parse(ref)
-
+  def handle_event("blur-cell", _, socket) do
     state =
       socket.assigns[:state]
       |> Niex.State.set_selected_cell(nil)
