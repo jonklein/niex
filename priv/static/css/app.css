@@ -228,9 +228,14 @@ header nav a {
     display: flex; }
     .niex .niex-body .cell .cell-row .gutter {
       width: 80px;
+      flex-shrink: 0;
       font-family: monospace; }
     .niex .niex-body .cell .cell-row .content {
+      display: flex;
+      justify-content: center;
       flex-grow: 1; }
+      .niex .niex-body .cell .cell-row .content form {
+        flex-grow: 1; }
   .niex .niex-body .cell textarea {
     font-family: monospace;
     background: #eee;
@@ -309,8 +314,9 @@ header nav a {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  display: inline-block;
   position: relative; }
+  .niex .dropdown .icon {
+    margin-left: auto; }
   .niex .dropdown svg path {
     fill: #ccc; }
   .niex .dropdown .dropdown-items {
@@ -321,14 +327,17 @@ header nav a {
     position: absolute;
     display: none;
     right: 0px;
+    top: 22px;
     z-index: 100; }
-  .niex .dropdown:hover .dropdown-items {
-    display: block; }
-    .niex .dropdown:hover .dropdown-items .item {
-      display: block;
-      cursor: pointer; }
-  .niex .dropdown:hover svg path {
-    fill: #222; }
+  .niex .dropdown:hover {
+    width: 80px; }
+    .niex .dropdown:hover .dropdown-items {
+      display: block; }
+      .niex .dropdown:hover .dropdown-items .item {
+        display: block;
+        cursor: pointer; }
+    .niex .dropdown:hover svg path {
+      fill: #222; }
 
 .niex .cell-separator {
   display: flex; }

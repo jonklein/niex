@@ -1,11 +1,11 @@
 defmodule NiexWeb.CellSeparator do
-  use NiexWeb, :live_view
+  use Phoenix.LiveComponent
 
   def render(assigns) do
     ~L"""
       <div class="cell-separator">
         <div class="dropdown">
-            <span>
+            <span class="icon">
                 <i size="50" class="fas fa-plus-square"></i>
             </span>
             <div class="dropdown-items">

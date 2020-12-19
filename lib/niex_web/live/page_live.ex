@@ -88,28 +88,14 @@ defmodule NiexWeb.PageLive do
 
   def handle_event(
         "update-content",
-        %{"index" => index, "text" => value, "cell_type" => "markdown"},
+        %{"index" => index, "text" => value},
         socket
       ) do
     {idx, _} = Integer.parse(index)
 
     state =
       socket.assigns[:state]
-      |> Niex.State.update_cell(idx, %{content: [value], cell_type: "markdown"})
-
-    {:noreply, assign(socket, state: state)}
-  end
-
-  def handle_event(
-        "update-content",
-        %{"index" => index, "text" => value, "cell_type" => "code"},
-        socket
-      ) do
-    {idx, _} = Integer.parse(index)
-
-    state =
-      socket.assigns[:state]
-      |> Niex.State.update_cell(idx, %{content: [value], cell_type: "code"})
+      |> Niex.State.update_cell(idx, %{content: [value]})
 
     {:noreply, assign(socket, state: state)}
   end

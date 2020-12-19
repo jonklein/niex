@@ -74,7 +74,25 @@ config :niex, NiexWeb.Endpoint,
 Note: Though Niex uses Phoenix and LiveView, it runs as its own server on its own port and can be run happily alongside
 your own Phoenix app. 
 
-## Notebook format
+### Media
+
+Niex supports embeddable image, video and chart content in notebooks:
+
+```
+# Render an image
+image_url = "https://placekitten.com/408/287"
+Niex.Content.image(image_url)
+
+# Render a video
+video_url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+Niex.Content.video(video_url)
+
+# Render a line chart: 
+data = (1..30) |> Enum.map(fn i -> [i, :math.sin(i)] end)
+Niex.Content.chart("LineChart", data, height: 400)
+```
+
+### Notebook format
 
 Notebooks are stored in a JSON format generally inspired by the Jupyter notebook format, but greatly simplified.  
 

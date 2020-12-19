@@ -14,11 +14,11 @@
     </div>
 
     <div class="niex-body" phx-hook="NiexPage" id="niex-page">
-        <%= NiexWeb.CellSeparator.render(%{index: 0}) %>
+        <%= live_component(@socket, NiexWeb.CellSeparator, %{id: "separator-#{0}", index: 0}) %>
         <%= for {cell, i} <- Enum.with_index(Niex.State.active_worksheet(@state)[:cells]) do %>
-        <%= Niex.Cells.render(%{state: @state, cell: cell, idx: i}) %>
-        <%= NiexWeb.CellSeparator.render(%{index: i + 1}) %>
-    <% end %>
+        <%= live_component(@socket, NiexWeb.Cells, %{id: "cell-#{i + 1}", cell: cell, idx: i, selected: @state.selected_cell == i}) %>
+        <%= live_component(@socket, NiexWeb.CellSeparator, %{id: "separator-#{i + 1}", index: i + 1}) %>
+        <% end %>
     </div>
 
     <%= if @show_open_dialog do %>

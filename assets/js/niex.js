@@ -33,6 +33,12 @@ export const hooks = {
                     e.preventDefault()
                     e.stopPropagation()
                 }
+
+                if(e.code === "KeyO" && e.metaKey) {
+                    this.pushEvent("open", {})
+                    e.preventDefault()
+                    e.stopPropagation()
+                }
             })
         }
     },
@@ -54,7 +60,6 @@ export const hooks = {
             resizeTextArea(this.el)
 
             this.el.addEventListener("keydown", (e) => {
-                console.log(e.code)
                 if (e.metaKey && e.code === "Enter") {
                     e.target.closest(".content").querySelector("button[class='run']").click()
                 }

@@ -9,7 +9,6 @@
     background: #ccc;
   }
 
-
   .niex-header {
     form {
       flex-grow: 1;
@@ -71,11 +70,15 @@
 
       .gutter {
         width: 80px;
+        flex-shrink: 0;
         font-family: monospace;
       }
 
       .content {
+        display: flex;
+        justify-content: center;
         flex-grow: 1;
+        form { flex-grow: 1; }
       }
     }
 
@@ -185,11 +188,12 @@
     flex-direction: column;
     cursor: pointer;
 
+    .icon { margin-left: auto; }
+
     svg path {
       fill: #ccc;
     }
 
-    display: inline-block;
     position: relative;
 
     .dropdown-items {
@@ -200,10 +204,13 @@
       position: absolute;
       display: none;
       right: 0px;
+      top: 22px;
       z-index: 100;
     }
 
     &:hover {
+      width: 80px;
+
       .dropdown-items {
         display: block;
 

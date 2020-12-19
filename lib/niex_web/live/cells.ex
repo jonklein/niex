@@ -1,17 +1,14 @@
-defmodule Niex.Cells do
+defmodule NiexWeb.Cells do
   use Phoenix.LiveComponent
   import Phoenix.HTML
 
   def render(
         assigns = %{
           idx: idx,
-          state: state,
-          cell: %{
-            cell_type: "markdown"
-          }
+          selected: true,
+          cell: %{cell_type: "markdown"}
         }
-      )
-      when state.selected_cell == idx do
+      ) do
     ~L"""
     <div class="cell markdown"  class="cell"  phx-value-ref="<%= idx %>">
       <form phx-change="update-content" phx-focus="xfocus-cell">
@@ -19,10 +16,10 @@ defmodule Niex.Cells do
         <input type="hidden" name="cell_type" value="markdown" />
         <textarea autofocus phx-value-ref="<%= idx %>" phx-blur="blur-cell" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= idx %>"><%= @cell[:content] %></textarea>
       </form>
-        <div class="toolbar">
-          <button class="remove" phx-click="remove-cell" phx-value-index="<%= idx %>" phx-disable-with="Removing...">
-            <i class="fas fa-trash"></i>
-          </button>
+      <div class="toolbar">
+        <button class="remove" phx-click="remove-cell" phx-value-index="<%= idx %>" phx-disable-with="Removing...">
+          <i class="fas fa-trash"></i>
+        </button>
       </div>
     </div>
     """
@@ -53,29 +50,27 @@ defmodule Niex.Cells do
         }
       ) do
     ~L"""
-      <div class="cell" phx-focus="focus-cell" phx-blur="blur-cell" phx-value-ref="<%=
-      @idx
-    %>">
+      <div class="cell">
         <div class="cell-row">
           <span class="gutter">
             In [<%= @cell[:prompt_number] %>]:
           </span>
-        <span class="content">
+        <div class="content">
           <form phx-submit="noop" phx-change="update-content">
            <input type="hidden" name="index" value="<%= @idx %>" />
            <input type="hidden" name="cell_type" value="code" />
-          <textarea autofocus phx-click="focus-cell" phx-value-ref="<%= @idx %>" phx-hook="NiexCodeEditor" phx-focus="focus-cell" name="text" id="cell-code-<%= @idx %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
-      </form>
+          <textarea autofocus phx-click="focus-cell" phx-value-ref="<%= @idx %>" phx-hook="NiexCodeEditor" name="text" id="cell-code-<%= @idx %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
+         </form>
               <div class="toolbar">
-          <button class="run" phx-disable-with="Running..." phx-click="execute-cell" phx-value-index="<%= @idx %>">
+          <button class="run" phx-click="execute-cell" phx-value-index="<%= @idx %>">
             <i class="fas fa-play"></i>
           </button>
-          <button class="remove" phx-disable-with="Removing..." phx-click="remove-cell" phx-value-index="<%= @idx %>">
+          <button class="remove" phx-click="remove-cell" phx-value-index="<%= @idx %>">
             <i class="fas fa-trash"></i>
           </button>
      </div>
 
-      </span>
+      </div>
       </div>
       <div class="cell-row">
         <span class="gutter">
@@ -88,9 +83,5 @@ defmodule Niex.Cells do
       </div>
     </pre>
     """
-  end
-
-  def render(_, _, _) do
-    ""
   end
 end
