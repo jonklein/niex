@@ -11,8 +11,11 @@ defmodule Niex.Content do
   @doc """
   Returns content for a video containing an image at the provided `url`.
   """
-  def video(url, options \\ [width: 480, height: 360]) do
-    %Niex.Content{type: "video", content: %{url: url, options: Enum.into(options, %{})}}
+  def video(url, options \\ []) do
+    %Niex.Content{
+      type: "video",
+      content: %{url: url, options: Enum.into(options, %{width: 480, height: 360})}
+    }
   end
 
   @doc """
@@ -24,13 +27,15 @@ defmodule Niex.Content do
   def chart(type, data, options \\ []) do
     %Niex.Content{
       type: "chart",
-      content: %{type: type, data: data, options: Enum.into(options, %{})}
+      content: %{type: type, data: data, options: Enum.into(options, %{width: 480, height: 360})}
     }
   end
 
   def render(%Niex.Content{type: "chart", content: data}) do
     """
-    <div phx-hook="NiexChart" data-chart='#{Poison.encode!(data)}' id="#{UUID.uuid4()}}" />
+    <div class="chart" style="width: #{data.options.width}px; height: #{data.options.height}px" phx-hook="NiexChart" data-chart='#{
+      Poison.encode!(data)
+    }' id="#{UUID.uuid4()}}" />
     """
   end
 

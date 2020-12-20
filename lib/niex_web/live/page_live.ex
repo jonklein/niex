@@ -15,9 +15,7 @@ defmodule NiexWeb.PageLive do
 
   def put_temp_flash(socket, key, msg) do
     Process.send_after(self(), {:clear_flash}, 3000)
-
-    socket
-    |> put_flash(key, msg)
+    socket |> put_flash(key, msg)
   end
 
   def handle_info({:clear_flash}, socket) do
@@ -58,12 +56,16 @@ defmodule NiexWeb.PageLive do
     {:noreply, socket}
   end
 
+  def handle_info({:blur_cell_delayed}, socket) do
+    state = socket.assigns[:state] |> Niex.State.set_selected_cell(nil)
+
+    {:noreply, assign(socket, state: state)}
+  end
+
   def handle_event("focus-cell", %{"ref" => ref}, socket) do
     {idx, _} = Integer.parse(ref)
 
-    state =
-      socket.assigns[:state]
-      |> Niex.State.set_selected_cell(idx)
+    state = socket.assigns[:state] |> Niex.State.set_selected_cell(idx)
 
     {:noreply, assign(socket, state: state)}
   end
@@ -79,11 +81,9 @@ defmodule NiexWeb.PageLive do
   end
 
   def handle_event("blur-cell", _, socket) do
-    state =
-      socket.assigns[:state]
-      |> Niex.State.set_selected_cell(nil)
-
-    {:noreply, assign(socket, state: state)}
+    # There's a race condition
+    Process.send_after(self(), {:blur_cell_delayed}, 100)
+    {:noreply, socket}
   end
 
   def handle_event(
@@ -133,7 +133,7 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state, document_title: title)}
   end
 
-  def handle_event(_, _, socket) do
+  def handle_event(other, _, socket) do
     {:noreply, socket}
   end
 end

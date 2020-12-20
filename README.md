@@ -90,7 +90,15 @@ Niex.Content.video(video_url)
 # Render a line chart: 
 data = (1..30) |> Enum.map(fn i -> [i, :math.sin(i)] end)
 Niex.Content.chart("LineChart", data, height: 400)
+
+# Render a pie chart: 
+data = %{"Elixir" => 80, "JavaScript" => 10, "Ruby" => 20}
+Niex.Content.chart("PieChart", data, height: 400)
 ```
+
+Niex uses the [Chartkick](https://chartkick.com) library for charting, and many other 
+chart types are available.  See the [Chartkick JavaScript documentation](https://github.com/ankane/chartkick.js) for 
+a full list.
 
 ### Notebook format
 
