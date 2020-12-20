@@ -1,27 +1,17 @@
 # Niex - Interactive Elixir Code Notebooks
 
-Niex is an interactive Elixir code notebook built with Phoenix LiveView with support for embedded media and 
-charting.  Niex stores your data & code in persistent, interactive notebooks, making it  great for scientific and data analysis applications using Elixir, or for sharing interactive demos of your Elixir code. 
+Niex is an interactive Elixir code notebook with support for embedded media and 
+charting, built with Phoenix LiveView.  Niex stores your data & code in persistent, interactive notebooks, making it great for scientific and 
+data analysis applications using Elixir, or for sharing visual, interactive demos and documentation of code
+written in Elixir. 
 
 ![An animation of a Niex notebook  in action](https://github.com/jonklein/niex/blob/master/sample_notebooks/demo.gif?raw=true)
 
-## Why Niex?
-
-You may note that the powerful, full-featured [Jupyter](https://jupyter.org/) project is already capable of supporting other language backends, 
-including Elixir, so what's the advantage of using Niex for an interactive Elixir notebook?
-
-- Embeddable - Niex is easily embedable in your own Elixir project so that you can easily use it 
-as a development and exploration workspace for your own code.   
-
-- Simple - Niex offers a simple Phoenix/Elixir app to get up and running quickly & easily or to deploy however you prefer to 
-deploy your Phoenix apps. 
-
-- Lightweight
-
-Niex is extremely lightweight
-
-- Written in native Elixir, so it integrates easily with your existing Elixir project and lets you use your own code 
-in notebooks
+Niex is inspired by the powerful and full-featured [Jupyter](https://jupyter.org/) project. You may note that Jupyter 
+(with some effort) can already support Elixir as a backend, so what's the advantage of using 
+Niex?  The main advantage is that Niex is simple, lightweight and written fully in Elixir, so it's easy to use as a simple 
+dependency to integrate with your existing Elixir code.  It can be run as a standalone
+Phoenix app, or embedded in your own Elixir project. 
 
 ## Getting Started
 
@@ -72,7 +62,8 @@ config :niex, NiexWeb.Endpoint,
 ```
 
 Note: Though Niex uses Phoenix and LiveView, it runs as its own server on its own port and can be run happily alongside
-your own Phoenix app. 
+your own Phoenix app.  Configure the Niex port number accordingly to avoid conflicts with the rest of your 
+project - in the example above, we use port 3333. 
 
 ### Media
 
@@ -127,14 +118,15 @@ Sample notebook:
 
 ## Known issues / future improvements 
 
-- executed code is *not* sandboxed - see section below on arbitrary code execution
+- executed code is **not** sandboxed - see section below on arbitrary code execution
 - `alias`, `import` and `use` do not function as expected in the notebook
 - future work - add support for other media types
-- future work - add support custom Live components in cells
+- future work - add support for Live components in cells
+- notebook format & details are subject to change
 
-## Warning - arbitrary code execution
+## WARNING: arbitrary code execution
 
-This software enables arbitrary code execution *by design* – is for *development and local use only*.  If you
+This software enables arbitrary code execution **by design** – it is intended for **development and local use only**.  If you
 choose expose any Niex functionality is available over a network, you are responsible for
 implementing the necessary authorization and access controls. 
 

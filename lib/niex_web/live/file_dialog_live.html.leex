@@ -6,7 +6,7 @@
             <a phx-click="select" phx-value-path='<%= path %>'><%= component %></a>
             <% end %>
             <%= if @mode == "save" do %>
-            <form phx-change="update-filename">
+            <form phx-change="update-filename" phx-submit="noop">
                 <input class="new_filename" type="text" value="<%= @filename %>"
                        name="filename"/>
             </form>
