@@ -26,6 +26,7 @@ defmodule Niex.Notebook do
     cells =
       List.insert_at(worksheet[:cells], idx, %{
         prompt_number: 0,
+        id: UUID.uuid4(),
         cell_type: cell_type,
         content: [default_content(cell_type)],
         outputs: [%{text: ""}]
@@ -57,12 +58,13 @@ defmodule Niex.Notebook do
   Executes the Elixir code cell of a `notebook` worksheet at `worksheet_idx` at the provided `index`
   """
   def execute_cell(notebook, worksheet, idx, bindings) do
-    cmd = Enum.join(cell(notebook, worksheet, idx)[:content], "\n")
+    cell = cell(notebook, worksheet, idx)
+    cmd = Enum.join(cell[:content], "\n")
 
     {output, bindings} =
       try do
         # currently not using stdout - may capture & display in the future
-        {result, _} = Niex.Eval.capture_stdout(fn -> Code.eval_string(cmd, bindings) end)
+        {result, _} = Niex.Eval.capture_output(self(), worksheet, cell.id, cmd, bindings)
 
         result
       rescue
@@ -70,7 +72,7 @@ defmodule Niex.Notebook do
           {err, bindings}
       end
 
-    {update_cell(notebook, worksheet, idx, %{outputs: outputs(output)}), bindings}
+    {update_cell(notebook, worksheet, idx, %{running: true}), bindings}
   end
 
   @doc """
@@ -125,13 +127,5 @@ defmodule Niex.Notebook do
   """
   def cell(notebook, worksheet, index) do
     Enum.at(notebook.worksheets, worksheet)[:cells] |> Enum.at(index)
-  end
-
-  defp outputs(output = %Niex.Content{}) do
-    [%{text: Niex.Content.render(output)}]
-  end
-
-  defp outputs(output) do
-    [%{text: [inspect(output)]}]
   end
 end

@@ -1,0 +1,1 @@
+{"worksheets":[{"cells":[{"running":true,"prompt_number":0,"outputs":[{"text":["\"Done\""]}],"content":["for i <- (1..30) do\n  Process.sleep(10)\n  Niex.render(i)\nend\n\n\"Done\""],"cell_type":"code"}]}],"metadata":{"name":"Untitled Notebook"}}

@@ -18,6 +18,7 @@ defmodule Niex.State do
             cells: [
               %{
                 prompt_number: 0,
+                id: UUID.uuid4(),
                 cell_type: "code",
                 content: ["IO.inspect(\"hello, world\")"],
                 outputs: [%{"text" => ""}]
@@ -81,6 +82,10 @@ defmodule Niex.State do
           ),
         dirty: true
     }
+  end
+
+  def update_bindings(state, bindings) do
+    %{state | bindings: bindings}
   end
 
   def execute_cell(state, idx) do

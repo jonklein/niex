@@ -56,6 +56,31 @@ defmodule NiexWeb.PageLive do
     {:noreply, socket}
   end
 
+  def handle_info({:update_cell_output, worksheet, id, content}, socket) do
+    idx =
+      Enum.at(socket.assigns[:state].notebook.worksheets, 0).cells
+      |> Enum.find_index(fn c -> c.id == id end)
+
+    state =
+      socket.assigns[:state]
+      |> Niex.State.update_cell(idx, content)
+
+    {:noreply, assign(socket, state: state)}
+  end
+
+  def handle_info({:update_cell_output, worksheet, id, content, bindings}, socket) do
+    idx =
+      Enum.at(socket.assigns[:state].notebook.worksheets, 0).cells
+      |> Enum.find_index(fn c -> c.id == id end)
+
+    state =
+      socket.assigns[:state]
+      |> Niex.State.update_cell(idx, content)
+      |> Niex.State.update_bindings(bindings)
+
+    {:noreply, assign(socket, state: state)}
+  end
+
   def handle_info({:blur_cell_delayed}, socket) do
     state = socket.assigns[:state] |> Niex.State.set_selected_cell(nil)
 
