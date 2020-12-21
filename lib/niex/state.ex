@@ -62,22 +62,21 @@ defmodule Niex.State do
     }
   end
 
-  def remove_cell(state, idx) do
+  def remove_cell(state, id) do
     %{
       state
-      | notebook: Niex.Notebook.remove_cell(state.notebook, state.worksheet, idx),
+      | notebook: Niex.Notebook.remove_cell(state.notebook, id),
         dirty: true
     }
   end
 
-  def update_cell(state, idx, update) do
+  def update_cell(state, id, update) do
     %{
       state
       | notebook:
           Niex.Notebook.update_cell(
             state.notebook,
-            state.worksheet,
-            idx,
+            id,
             update
           ),
         dirty: true
@@ -88,9 +87,8 @@ defmodule Niex.State do
     %{state | bindings: bindings}
   end
 
-  def execute_cell(state, idx) do
-    {notebook, bindings} =
-      Niex.Notebook.execute_cell(state.notebook, state.worksheet, idx, state.bindings)
+  def execute_cell(state, id) do
+    {notebook, bindings} = Niex.Notebook.execute_cell(state.notebook, id, state.bindings)
 
     %{
       state

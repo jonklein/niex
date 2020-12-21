@@ -46,29 +46,40 @@ defmodule NiexWeb.StateTest do
 
   test "removes a cell" do
     state = Niex.State.new()
-    state = Niex.State.remove_cell(state, 0)
+    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
+
+    state = Niex.State.remove_cell(state, cell.id)
     assert([%{cells: []}] = state.notebook.worksheets)
   end
 
   test "updates a cell" do
     state = Niex.State.new()
-    state = Niex.State.update_cell(state, 0, %{content: ["new code"]})
+    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
+
+    state = Niex.State.update_cell(state, cell.id, %{content: ["new code"]})
     assert([%{cells: [%{content: ["new code"], cell_type: "code"}]}] = state.notebook.worksheets)
   end
 
   test "executes a cell and sets output" do
     state = Niex.State.new()
-    state = Niex.State.update_cell(state, 0, %{content: ["IO.inspect(123)"]})
-    state = Niex.State.execute_cell(state, 0)
+    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
 
-    assert(
-      [
-        %{
-          cells: [
-            %{content: ["IO.inspect(123)"], cell_type: "code", outputs: [%{text: ["123"]}]}
-          ]
-        }
-      ] = state.notebook.worksheets
-    )
+    state = Niex.State.update_cell(state, cell.id, %{content: ["IO.inspect(123)"]})
+    state = Niex.State.execute_cell(state, cell.id)
+
+    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
+
+    receive do
+      {:update_cell_output, id, update, []} ->
+        assert(id == cell.id)
+
+        assert(
+          %{
+            content: ["IO.inspect(123)"],
+            cell_type: "code",
+            outputs: [%{text: ["123"]}]
+          } = Map.merge(cell, update)
+        )
+    end
   end
 end

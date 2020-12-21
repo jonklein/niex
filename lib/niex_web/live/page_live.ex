@@ -1,5 +1,6 @@
 defmodule NiexWeb.PageLive do
   use NiexWeb, :live_view
+  require Logger
 
   def mount(_params, _session, socket) do
     state = Niex.State.new()
@@ -56,26 +57,18 @@ defmodule NiexWeb.PageLive do
     {:noreply, socket}
   end
 
-  def handle_info({:update_cell_output, worksheet, id, content}, socket) do
-    idx =
-      Enum.at(socket.assigns[:state].notebook.worksheets, 0).cells
-      |> Enum.find_index(fn c -> c.id == id end)
-
+  def handle_info({:update_cell_output, id, content}, socket) do
     state =
       socket.assigns[:state]
-      |> Niex.State.update_cell(idx, content)
+      |> Niex.State.update_cell(id, content)
 
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_info({:update_cell_output, worksheet, id, content, bindings}, socket) do
-    idx =
-      Enum.at(socket.assigns[:state].notebook.worksheets, 0).cells
-      |> Enum.find_index(fn c -> c.id == id end)
-
+  def handle_info({:update_cell_output, id, content, bindings}, socket) do
     state =
       socket.assigns[:state]
-      |> Niex.State.update_cell(idx, content)
+      |> Niex.State.update_cell(id, content)
       |> Niex.State.update_bindings(bindings)
 
     {:noreply, assign(socket, state: state)}
@@ -87,20 +80,16 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("focus-cell", %{"ref" => ref}, socket) do
-    {idx, _} = Integer.parse(ref)
-
-    state = socket.assigns[:state] |> Niex.State.set_selected_cell(idx)
+  def handle_event("focus-cell", %{"ref" => id}, socket) do
+    state = socket.assigns[:state] |> Niex.State.set_selected_cell(id)
 
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_event("execute-cell", %{"index" => index}, socket) do
-    {idx, _} = Integer.parse(index)
-
+  def handle_event("execute-cell", %{"ref" => id}, socket) do
     state =
       socket.assigns[:state]
-      |> Niex.State.execute_cell(idx)
+      |> Niex.State.execute_cell(id)
 
     {:noreply, assign(socket, state: state)}
   end
@@ -113,14 +102,12 @@ defmodule NiexWeb.PageLive do
 
   def handle_event(
         "update-content",
-        %{"index" => index, "text" => value},
+        %{"ref" => id, "text" => value},
         socket
       ) do
-    {idx, _} = Integer.parse(index)
-
     state =
       socket.assigns[:state]
-      |> Niex.State.update_cell(idx, %{content: [value]})
+      |> Niex.State.update_cell(id, %{content: [value]})
 
     {:noreply, assign(socket, state: state)}
   end
@@ -130,9 +117,8 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: Niex.State.add_cell(socket.assigns[:state], idx, type))}
   end
 
-  def handle_event("remove-cell", %{"index" => index}, socket) do
-    {idx, _} = Integer.parse(index)
-    {:noreply, assign(socket, state: Niex.State.remove_cell(socket.assigns[:state], idx))}
+  def handle_event("remove-cell", %{"ref" => id}, socket) do
+    {:noreply, assign(socket, state: Niex.State.remove_cell(socket.assigns[:state], id))}
   end
 
   def handle_event("open", %{}, socket) do
@@ -158,7 +144,8 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state, document_title: title)}
   end
 
-  def handle_event(other, _, socket) do
+  def handle_event(other, params, socket) do
+    Logger.debug("Unhandled event: #{other} - #{inspect(params)}")
     {:noreply, socket}
   end
 end
