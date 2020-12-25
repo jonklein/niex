@@ -1,15 +1,20 @@
 defmodule Niex.Content do
   defstruct(content: nil, type: nil)
 
+  @moduledoc """
+  Content that can be rendered within a cell in a Niex notebook when
+  returned (or rendered via `Niex.render/1`) in a notebook cell.
+  """
+
   @doc """
-  Returns content for a cell containing an image at the provided `url`.
+  Builds content for a cell containing an image at the provided `url`.
   """
   def image(url) do
     %Niex.Content{type: "image", content: url}
   end
 
   @doc """
-  Returns content for a video containing an image at the provided `url`.
+  Builds content for a video containing an image at the provided `url`.
   """
   def video(url, options \\ []) do
     %Niex.Content{
@@ -31,6 +36,9 @@ defmodule Niex.Content do
     }
   end
 
+  @doc """
+  Renders the provided `Niex.Content` into HTML
+  """
   def render(%Niex.Content{type: "chart", content: data}) do
     """
     <div class="chart" style="width: #{data.options.width}px; height: #{data.options.height}px" phx-hook="NiexChart" data-chart='#{

@@ -1,4 +1,6 @@
 defmodule NiexWeb.ErrorView do
+  @moduledoc false
+
   use NiexWeb, :view
 
   # If you want to customize a particular status code

@@ -51,8 +51,8 @@ config :phoenix, :json_library, Poison
 # Configures the endpoint
 config :niex, NiexWeb.Endpoint,
   pubsub_server: Niex.PubSub,
-  live_view: [signing_salt: "xxxxxxxxx"],
-  secret_key_base: "xxxxxxxxxx",
+  live_view: [signing_salt: "xxxxxxxxxxxx"],
+  secret_key_base: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   server: true,
   debug_errors: true,
   check_origin: false,
@@ -64,6 +64,33 @@ config :niex, NiexWeb.Endpoint,
 Note: Though Niex uses Phoenix and LiveView, it runs as its own server on its own port and can be run happily alongside
 your own Phoenix app.  Configure the Niex port number accordingly to avoid conflicts with the rest of your 
 project - in the example above, we use port 3333. 
+
+### Basic Usage
+
+Niex notebooks support two types of cells: code and markdown.
+
+Markdown cells are simply used for human-readable text using the [Markdown format](https://www.markdownguide.org/basic-syntax/).
+
+Code cells are used to store & execute Elixir code.  To use a code cell, simply populate the cell and execute it using 
+the "run" button.  The cell output field will display the result of the execution.
+
+#### Asynchronous execution
+
+You can also display intermediate results for long-running code in cells.  This allows you
+to create animations or updates for asynchronous processes.  To render an intermediate result
+before the cell execution is complete, use `Niex.Render/1` with the content.
+
+In this example, we render an animated sine-wave chart:
+
+```
+for j <- (1..300) do
+  Process.sleep(30)
+  data = (1..50) |> Enum.map(fn i -> [i, :math.sin(i / 3.0 + j / 10.0)] end)
+  Niex.render(Niex.Content.chart("LineChart", data, %{points: false}))
+end
+
+"Click run to animate"
+``` 
 
 ### Media
 

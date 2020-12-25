@@ -7,14 +7,10 @@ defmodule Niex.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       NiexWeb.Telemetry,
-      # Start the PubSub system
       {Phoenix.PubSub, name: Niex.PubSub},
-      # Start the Endpoint (http/https)
+      {Registry, keys: :unique, name: Niex.CellEvaluation},
       NiexWeb.Endpoint
-      # Start a worker by calling: Niex.Worker.start_link(arg)
-      # {Niex.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

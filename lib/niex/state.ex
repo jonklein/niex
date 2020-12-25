@@ -1,4 +1,8 @@
 defmodule Niex.State do
+  @moduledoc """
+  The internal state representing a running `Niex.Notebook`.
+  """
+
   defstruct(
     notebook: %Niex.Notebook{},
     selected_cell: nil,
@@ -88,12 +92,9 @@ defmodule Niex.State do
   end
 
   def execute_cell(state, id) do
-    {notebook, bindings} = Niex.Notebook.execute_cell(state.notebook, id, state.bindings)
-
     %{
       state
-      | notebook: notebook,
-        bindings: bindings,
+      | notebook: Niex.Notebook.execute_cell(state.notebook, id, state.bindings),
         dirty: true
     }
   end

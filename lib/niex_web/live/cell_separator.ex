@@ -1,4 +1,6 @@
 defmodule NiexWeb.CellSeparator do
+  @moduledoc false
+
   use Phoenix.LiveComponent
 
   def render(assigns) do

@@ -9,6 +9,9 @@ defmodule Niex.Notebook do
     metadata: %{name: "", version: "1.0"}
   )
 
+  @doc """
+  The default notebook title.
+  """
   def default_title do
     "Untitled Notebook"
   end
@@ -20,11 +23,15 @@ defmodule Niex.Notebook do
     %{notebook | metadata: metadata}
   end
 
-  def add_cell(notebook, worksheet_idx, idx, cell_type) do
+  @doc """
+  Adds a cell to the `notebook` with the specified `worksheet_idx`, `cell_idx` and `cell_type`,
+  returns the updated notebook.
+  """
+  def add_cell(notebook, worksheet_idx, cell_idx, cell_type) do
     worksheet = Enum.at(notebook.worksheets, worksheet_idx)
 
     cells =
-      List.insert_at(worksheet[:cells], idx, %{
+      List.insert_at(worksheet[:cells], cell_idx, %{
         prompt_number: 0,
         id: UUID.uuid4(),
         cell_type: cell_type,
@@ -41,6 +48,10 @@ defmodule Niex.Notebook do
     %{notebook | worksheets: worksheets}
   end
 
+  @doc """
+  Removes the cell with the specified `id` from the `notebook`, returns
+  the updated notebook.
+  """
   def remove_cell(notebook, id) do
     {worksheet_idx, index} = cell_path(notebook, id)
 
@@ -65,18 +76,9 @@ defmodule Niex.Notebook do
     cell = cell(notebook, worksheet, index)
     cmd = Enum.join(cell[:content], "\n")
 
-    {output, bindings} =
-      try do
-        # currently not using stdout - may capture & display in the future
-        {result, _} = Niex.Eval.capture_output(self(), cell.id, cmd, bindings)
+    Niex.AsyncEval.eval_string(self(), cell.id, cmd, bindings)
 
-        result
-      rescue
-        err ->
-          {err, bindings}
-      end
-
-    {update_cell(notebook, id, %{running: true}), bindings}
+    update_cell(notebook, id, %{running: true})
   end
 
   @doc """
@@ -86,7 +88,6 @@ defmodule Niex.Notebook do
   def update_cell(notebook, id, updates) do
     {worksheet_idx, index} = cell_path(notebook, id)
     worksheet = Enum.at(notebook.worksheets, worksheet_idx)
-    index = Enum.find_index(worksheet.cells, fn c -> c.id == id end)
 
     %{
       notebook
@@ -128,10 +129,7 @@ defmodule Niex.Notebook do
     "# Header\ncontent"
   end
 
-  @doc """
-  Returns the `notebook` cell in `worksheet` at the specified `index`
-  """
-  def cell(notebook, worksheet, index) do
+  defp cell(notebook, worksheet, index) do
     Enum.at(notebook.worksheets, worksheet)[:cells] |> Enum.at(index)
   end
 

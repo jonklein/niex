@@ -35,6 +35,7 @@ defmodule Niex.MixProject do
     [
       {:phoenix, "~> 1.5.7"},
       {:postgrex, ">= 0.0.0"},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:phoenix_live_view, "~> 0.15.0", override: true},
       {:floki, ">= 0.27.0", only: :test},
       {:phoenix_html, "~> 2.11"},

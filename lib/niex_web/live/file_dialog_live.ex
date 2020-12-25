@@ -1,4 +1,6 @@
 defmodule NiexWeb.FileDialogLive do
+  @moduledoc false
+
   use NiexWeb, :live_view
 
   def mount(_params, session, socket) do

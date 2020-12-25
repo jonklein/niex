@@ -1,4 +1,6 @@
 defmodule NiexWeb.Cells do
+  @moduledoc false
+
   use Phoenix.LiveComponent
   import Phoenix.HTML
 

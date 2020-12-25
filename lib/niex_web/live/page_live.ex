@@ -1,4 +1,6 @@
 defmodule NiexWeb.PageLive do
+  @moduledoc false
+
   use NiexWeb, :live_view
   require Logger
 
@@ -57,18 +59,22 @@ defmodule NiexWeb.PageLive do
     {:noreply, socket}
   end
 
-  def handle_info({:update_cell_output, id, content}, socket) do
+  def handle_info({:command_stdout, _cell_id, _stdout}, socket) do
+    # Not currently capturing stdout content
+    {:noreply, socket}
+  end
+
+  def handle_info({:command_output, cell_id, content}, socket) do
     state =
       socket.assigns[:state]
-      |> Niex.State.update_cell(id, content)
+      |> Niex.State.update_cell(cell_id, content)
 
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_info({:update_cell_output, id, content, bindings}, socket) do
+  def handle_info({:command_bindings, bindings}, socket) do
     state =
       socket.assigns[:state]
-      |> Niex.State.update_cell(id, content)
       |> Niex.State.update_bindings(bindings)
 
     {:noreply, assign(socket, state: state)}

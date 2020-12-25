@@ -60,26 +60,35 @@ defmodule NiexWeb.StateTest do
     assert([%{cells: [%{content: ["new code"], cell_type: "code"}]}] = state.notebook.worksheets)
   end
 
-  test "executes a cell and sets output" do
+  test "executes a cell and sets outputs & bindings" do
     state = Niex.State.new()
     cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
 
-    state = Niex.State.update_cell(state, cell.id, %{content: ["IO.inspect(123)"]})
+    state =
+      Niex.State.update_cell(state, cell.id, %{content: ["Niex.render(0)\nx = IO.inspect(1)"]})
+
     state = Niex.State.execute_cell(state, cell.id)
 
     cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
 
+    # First message: set output to 0 from Niex.render
     receive do
-      {:update_cell_output, id, update, []} ->
+      {:command_output, id, update} ->
         assert(id == cell.id)
+        assert(%{outputs: [%{text: ["0"]}]} = Map.merge(cell, update))
+    end
 
-        assert(
-          %{
-            content: ["IO.inspect(123)"],
-            cell_type: "code",
-            outputs: [%{text: ["123"]}]
-          } = Map.merge(cell, update)
-        )
+    # Second message: set output to 1 from result
+    receive do
+      {:command_output, id, update} ->
+        assert(id == cell.id)
+        assert(%{outputs: [%{text: ["1"]}]} = Map.merge(cell, update))
+    end
+
+    # Third message: set bindings to [x: 1]
+    receive do
+      {:command_bindings, bindings} ->
+        assert(bindings == [x: 1])
     end
   end
 end
