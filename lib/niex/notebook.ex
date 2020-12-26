@@ -70,13 +70,13 @@ defmodule Niex.Notebook do
   @doc """
   Executes the Elixir code cell of a `notebook` worksheet at `worksheet_idx` at the provided `index`
   """
-  def execute_cell(notebook, id, bindings) do
+  def execute_cell(notebook, id, bindings, env) do
     {worksheet, index} = cell_path(notebook, id)
 
     cell = cell(notebook, worksheet, index)
     cmd = Enum.join(cell[:content], "\n")
 
-    Niex.AsyncEval.eval_string(self(), cell.id, cmd, bindings)
+    Niex.AsyncEval.eval_string(self(), cell.id, cmd, bindings, env)
 
     update_cell(notebook, id, %{running: true})
   end

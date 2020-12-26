@@ -69,10 +69,11 @@ project - in the example above, we use port 3333.
 
 Niex notebooks support two types of cells: code and markdown.
 
-Markdown cells are simply used for human-readable text using the [Markdown format](https://www.markdownguide.org/basic-syntax/).
+Markdown cells are used for human-readable text using the [Markdown format](https://www.markdownguide.org/basic-syntax/).
 
 Code cells are used to store & execute Elixir code.  To use a code cell, simply populate the cell and execute it using 
 the "run" button.  The cell output field will display the result of the execution.
+
 
 #### Asynchronous execution
 
@@ -146,7 +147,6 @@ Sample notebook:
 ## Known issues / future improvements 
 
 - executed code is **not** sandboxed - see section below on arbitrary code execution
-- `alias`, `import` and `use` do not function as expected in the notebook
 - future work - add support for other media types
 - future work - add support for Live components in cells
 - notebook format & details are subject to change

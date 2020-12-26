@@ -7,6 +7,7 @@ defmodule Niex.State do
     notebook: %Niex.Notebook{},
     selected_cell: nil,
     worksheet: 0,
+    env: __ENV__,
     bindings: [],
     path: nil,
     dirty: false
@@ -91,10 +92,14 @@ defmodule Niex.State do
     %{state | bindings: bindings}
   end
 
+  def update_env(state, env) do
+    %{state | env: env}
+  end
+
   def execute_cell(state, id) do
     %{
       state
-      | notebook: Niex.Notebook.execute_cell(state.notebook, id, state.bindings),
+      | notebook: Niex.Notebook.execute_cell(state.notebook, id, state.bindings, state.env),
         dirty: true
     }
   end

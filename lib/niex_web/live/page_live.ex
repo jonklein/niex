@@ -59,8 +59,17 @@ defmodule NiexWeb.PageLive do
     {:noreply, socket}
   end
 
-  def handle_info({:command_stdout, _cell_id, _stdout}, socket) do
+  def handle_info({:command_env, env}, socket) do
+    state =
+      socket.assigns[:state]
+      |> Niex.State.update_env(env)
+
+    {:noreply, assign(socket, state: state)}
+  end
+
+  def handle_info({:command_stdout, _cell_id, stdout}, socket) do
     # Not currently capturing stdout content
+    IO.inspect(stdout)
     {:noreply, socket}
   end
 

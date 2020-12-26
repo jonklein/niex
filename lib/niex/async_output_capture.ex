@@ -23,8 +23,7 @@ defmodule Niex.AsyncOutputCapture do
       {:finish, pid} ->
         send(pid, {:finished})
 
-      x ->
-        IO.inspect(x)
+      _ ->
         # whatever, keep going
         capture(output_pid, context_data)
     end

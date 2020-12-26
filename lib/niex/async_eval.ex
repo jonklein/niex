@@ -11,22 +11,14 @@ defmodule Niex.AsyncEval do
   Uses `Niex.AsyncOutputCapture` as the process group leader in order to
   capture the outputs.
   """
-  def eval_string(output_pid, context_data, cmd, bindings) do
+  def eval_string(output_pid, context_data, cmd, bindings, env) do
     # Stop any existing process for the same context data (cell)
     cleanup(context_data, Registry.lookup(Niex.CellEvaluation, context_data))
-    Task.start(__MODULE__, :eval_and_capture, [output_pid, context_data, cmd, bindings])
-  end
-
-  defp cleanup(_, []) do
-  end
-
-  defp cleanup(context_data, [{pid, _}]) do
-    Registry.unregister(Niex.CellEvaluation, context_data)
-    Process.exit(pid, :kill)
+    Task.start(__MODULE__, :eval_and_capture, [output_pid, context_data, cmd, bindings, env])
   end
 
   @doc false
-  def eval_and_capture(output_pid, context_data, cmd, bindings) do
+  def eval_and_capture(output_pid, context_data, cmd, bindings, env) do
     Registry.register(Niex.CellEvaluation, context_data, self())
 
     capture_task = Niex.AsyncOutputCapture.start_link(output_pid, context_data)
@@ -36,7 +28,7 @@ defmodule Niex.AsyncEval do
 
     {status, {result, bindings}} =
       try do
-        {:ok, Code.eval_string(cmd, bindings)}
+        {:ok, eval_string_with_env(output_pid, cmd, bindings, env)}
       rescue
         err ->
           {:error, {err, []}}
@@ -64,5 +56,39 @@ defmodule Niex.AsyncEval do
     Registry.unregister(Niex.CellEvaluation, context_data)
 
     {status, result}
+  end
+
+  defp eval_string_with_env(output_pid, string, bindings, env) do
+    # In order to capture the __ENV__ from the string, we create
+    # a quoted expression that combines the input string with a
+    # call to send the env to the output_pid.
+
+    {:ok, expr} = Code.string_to_quoted(string)
+
+    Code.eval_quoted(
+      quote do
+        # This is the funniest line of Elixir I've written so far because the
+        # expression may have side effects in the form of __ENV__ manipulation
+        # (import, require, alias, etc).  We need to evaluate expr and capture the
+        # result for return, capture the __ENV__ via sending it, and then return
+        # the result - and we need to do it without poluting the bindings namespace
+        # which will also be captured & preserved.
+
+        Enum.at(
+          [unquote(expr), send(unquote(output_pid), {:command_env, __ENV__})],
+          0
+        )
+      end,
+      bindings,
+      env
+    )
+  end
+
+  defp cleanup(_, []) do
+  end
+
+  defp cleanup(context_data, [{pid, _}]) do
+    Registry.unregister(Niex.CellEvaluation, context_data)
+    Process.exit(pid, :kill)
   end
 end
