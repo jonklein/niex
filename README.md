@@ -72,8 +72,15 @@ Niex notebooks support two types of cells: code and markdown.
 Markdown cells are used for human-readable text using the [Markdown format](https://www.markdownguide.org/basic-syntax/).
 
 Code cells are used to store & execute Elixir code.  To use a code cell, simply populate the cell and execute it using 
-the "run" button.  The cell output field will display the result of the execution.
+the "run" button.  The cell output field will display the result of the execution.  Cells must be explicity executed - 
+if you make changes to code that other cells are dependent on, you must explicitly 
+rerun those cell commands in order.   
 
+#### Notebook & Interpreter State
+
+Like running an IEx session, Niex maintains an internal interpreter state that is **independent of the order
+of commands in the notebook**, and **is not saved in the notebook**.  This means that when you open a saved 
+notebook, you must execute each cell in order to restore internal state.  
 
 #### Asynchronous execution
 

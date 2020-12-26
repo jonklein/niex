@@ -1,6 +1,9 @@
 defmodule Niex.AsyncEval do
   @moduledoc """
-  Defines a process for asynchronous code execution and output capture.
+  Defines a process for asynchronous code execution and capture of various forms
+  of output and state.  Along with the `Niex.AsyncOutputCapture` module, this
+  module captures: 1) expression final output, 2) intermediate results via `Niex.render/1`,
+  3) stdout, 4) __ENV__ manipulation, 5) global bindings.
   """
 
   @doc """

@@ -89,10 +89,13 @@ defmodule NiexWeb.PageLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_info({:blur_cell_delayed}, socket) do
-    state = socket.assigns[:state] |> Niex.State.set_selected_cell(nil)
-
-    {:noreply, assign(socket, state: state)}
+  def handle_info({:blur_cell_delayed, selected_cell}, socket) do
+    if socket.assigns[:state].selected_cell == selected_cell do
+      state = socket.assigns[:state] |> Niex.State.set_selected_cell(nil)
+      {:noreply, assign(socket, state: state)}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("focus-cell", %{"ref" => id}, socket) do
@@ -110,8 +113,9 @@ defmodule NiexWeb.PageLive do
   end
 
   def handle_event("blur-cell", _, socket) do
-    # There's a race condition
-    Process.send_after(self(), {:blur_cell_delayed}, 100)
+    # There's a client-side race condition if we click a button in the cell -
+    # it blurs and rerenders before the button click.  Any delay here prevents it
+    Process.send_after(self(), {:blur_cell_delayed, socket.assigns[:state].selected_cell}, 100)
     {:noreply, socket}
   end
 
