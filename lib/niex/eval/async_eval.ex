@@ -1,7 +1,7 @@
-defmodule Niex.AsyncEval do
+defmodule Niex.Eval.AsyncEvaluator do
   @moduledoc """
   Defines a process for asynchronous code execution and capture of various forms
-  of output and state.  Along with the `Niex.AsyncOutputCapture` module, this
+  of output and state.  Along with the `Niex.Eval.OutputCapture` module, this
   module captures: 1) expression final output, 2) intermediate results via `Niex.render/1`,
   3) stdout, 4) __ENV__ manipulation, 5) global bindings.
   """
@@ -11,7 +11,7 @@ defmodule Niex.AsyncEval do
   provide `cmd` and `bindings`.  Sends the command output, command stdout,
   and any calls to `Niex.render/1` to the provided `output_pid` with the
   provided `context_data` (which is a cell ID string in standard Niex usage).
-  Uses `Niex.AsyncOutputCapture` as the process group leader in order to
+  Uses `Niex.Eval.OutputCapture` as the process group leader in order to
   capture the outputs.
   """
   def eval_string(output_pid, context_data, cmd, bindings, env) do
@@ -24,7 +24,7 @@ defmodule Niex.AsyncEval do
   def eval_and_capture(output_pid, context_data, cmd, bindings, env) do
     Registry.register(Niex.CellEvaluation, context_data, self())
 
-    capture_task = Niex.AsyncOutputCapture.start_link(output_pid, context_data)
+    capture_task = Niex.Eval.OutputCapture.start_link(output_pid, context_data)
 
     # Set the group leader so we send stdout and other output to capture_task
     Process.group_leader(self(), capture_task.pid)
@@ -51,7 +51,7 @@ defmodule Niex.AsyncEval do
     send(
       output_pid,
       {:command_output, context_data,
-       %{running: false, outputs: Niex.AsyncOutputCapture.outputs(result)}}
+       %{running: false, outputs: Niex.Eval.OutputCapture.outputs(result)}}
     )
 
     send(output_pid, {:command_bindings, bindings})

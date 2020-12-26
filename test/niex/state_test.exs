@@ -44,17 +44,32 @@ defmodule NiexWeb.StateTest do
     )
   end
 
+  test "renumbers code cell" do
+    state = Niex.State.new()
+    state = Niex.State.add_cell(state, 0, "markdown")
+    state = Niex.State.add_cell(state, 0, "code")
+    state = Niex.State.add_cell(state, 0, "code")
+
+    assert(
+      Enum.at(state.notebook.worksheets, 0).cells |> Enum.map(& &1[:prompt_number]) == [
+        0,
+        1,
+        nil,
+        2
+      ]
+    )
+  end
+
   test "removes a cell" do
     state = Niex.State.new()
-    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
-
+    [cell] = Enum.at(state.notebook.worksheets, 0).cells
     state = Niex.State.remove_cell(state, cell.id)
     assert([%{cells: []}] = state.notebook.worksheets)
   end
 
   test "updates a cell" do
     state = Niex.State.new()
-    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
+    [cell] = Enum.at(state.notebook.worksheets, 0).cells
 
     state = Niex.State.update_cell(state, cell.id, %{content: ["new code"]})
     assert([%{cells: [%{content: ["new code"], cell_type: "code"}]}] = state.notebook.worksheets)
@@ -62,14 +77,13 @@ defmodule NiexWeb.StateTest do
 
   test "executes a cell and sets outputs & bindings" do
     state = Niex.State.new()
-    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
+    [cell] = Enum.at(state.notebook.worksheets, 0).cells
 
     state =
       Niex.State.update_cell(state, cell.id, %{content: ["Niex.render(0)\nx = IO.inspect(1)"]})
 
-    state = Niex.State.execute_cell(state, cell.id)
-
-    cell = Enum.at(state.notebook.worksheets, 0).cells |> Enum.at(0)
+    # Execute cell, then expect a series of
+    Niex.State.execute_cell(state, cell.id, self())
 
     # First message: set output to 0 from Niex.render
     receive do
@@ -89,6 +103,12 @@ defmodule NiexWeb.StateTest do
     receive do
       {:command_bindings, bindings} ->
         assert(bindings == [x: 1])
+    end
+
+    # Last message: set env to something
+    receive do
+      {:command_env, env} ->
+        assert(env != nil)
     end
   end
 end

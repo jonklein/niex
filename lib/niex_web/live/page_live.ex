@@ -107,7 +107,7 @@ defmodule NiexWeb.PageLive do
   def handle_event("execute-cell", %{"ref" => id}, socket) do
     state =
       socket.assigns[:state]
-      |> Niex.State.execute_cell(id)
+      |> Niex.State.execute_cell(id, self())
 
     {:noreply, assign(socket, state: state)}
   end

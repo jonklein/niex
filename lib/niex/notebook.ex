@@ -31,8 +31,8 @@ defmodule Niex.Notebook do
     worksheet = Enum.at(notebook.worksheets, worksheet_idx)
 
     cells =
-      List.insert_at(worksheet[:cells], cell_idx, %{
-        prompt_number: 0,
+      List.insert_at(worksheet.cells, cell_idx, %{
+        prompt_number: nil,
         id: UUID.uuid4(),
         cell_type: cell_type,
         content: [default_content(cell_type)],
@@ -70,13 +70,13 @@ defmodule Niex.Notebook do
   @doc """
   Executes the Elixir code cell of a `notebook` worksheet at `worksheet_idx` at the provided `index`
   """
-  def execute_cell(notebook, id, bindings, env) do
+  def execute_cell(notebook, id, output_pid, bindings, env) do
     {worksheet, index} = cell_path(notebook, id)
 
     cell = cell(notebook, worksheet, index)
-    cmd = Enum.join(cell[:content], "\n")
+    cmd = Enum.join(cell.content, "\n")
 
-    Niex.AsyncEval.eval_string(self(), cell.id, cmd, bindings, env)
+    Niex.Eval.AsyncEvaluator.eval_string(output_pid, cell.id, cmd, bindings, env)
 
     update_cell(notebook, id, %{running: true})
   end
@@ -99,7 +99,7 @@ defmodule Niex.Notebook do
               worksheet
               | cells:
                   List.replace_at(
-                    worksheet[:cells],
+                    worksheet.cells,
                     index,
                     Map.merge(cell(notebook, worksheet_idx, index), updates)
                   )
@@ -110,12 +110,12 @@ defmodule Niex.Notebook do
 
   defp renumber_code_cells(list, idx \\ 0)
 
+  defp renumber_code_cells([first = %{cell_type: "code"} | rest], idx) do
+    [%{first | prompt_number: idx} | renumber_code_cells(rest, idx + 1)]
+  end
+
   defp renumber_code_cells([first | rest], idx) do
-    if first[:cell_type] == "code" do
-      [%{first | prompt_number: idx} | renumber_code_cells(rest, idx + 1)]
-    else
-      [first | renumber_code_cells(rest, idx)]
-    end
+    [first | renumber_code_cells(rest, idx)]
   end
 
   defp renumber_code_cells([], _) do
@@ -130,15 +130,13 @@ defmodule Niex.Notebook do
   end
 
   defp cell(notebook, worksheet, index) do
-    Enum.at(notebook.worksheets, worksheet)[:cells] |> Enum.at(index)
+    Enum.at(notebook.worksheets, worksheet).cells |> Enum.at(index)
   end
 
   defp cell_path(notebook, id) do
-    worksheet =
-      Enum.find_index(notebook.worksheets, fn w -> Enum.find(w.cells, fn c -> c.id == id end) end)
-
-    index = Enum.find_index(Enum.at(notebook.worksheets, worksheet).cells, fn c -> c.id == id end)
-
-    {worksheet, index}
+    Enum.find_value(Enum.with_index(notebook.worksheets), fn {w, wi} ->
+      ci = Enum.find_index(w.cells, &(&1.id == id))
+      if ci != -1, do: {wi, ci}
+    end)
   end
 end

@@ -96,10 +96,11 @@ defmodule Niex.State do
     %{state | env: env}
   end
 
-  def execute_cell(state, id) do
+  def execute_cell(state, id, output_pid) do
     %{
       state
-      | notebook: Niex.Notebook.execute_cell(state.notebook, id, state.bindings, state.env),
+      | notebook:
+          Niex.Notebook.execute_cell(state.notebook, id, output_pid, state.bindings, state.env),
         dirty: true
     }
   end

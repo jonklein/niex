@@ -1,4 +1,4 @@
-defmodule Niex.AsyncOutputCapture do
+defmodule Niex.Eval.OutputCapture do
   @moduledoc """
   Asynchronously captures stdout and Niex render calls and sends them to the
   provided `output_id`.  Gets set as the group_leader for the process performing
