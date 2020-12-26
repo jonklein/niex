@@ -67,12 +67,12 @@ defmodule Niex.AsyncEval do
 
     Code.eval_quoted(
       quote do
-        # This is the funniest line of Elixir I've written so far because the
+        # This is the funniest line of Elixir I've written.  The expr
         # expression may have side effects in the form of __ENV__ manipulation
         # (import, require, alias, etc).  We need to evaluate expr and capture the
-        # result for return, capture the __ENV__ via sending it, and then return
-        # the result - and we need to do it without poluting the bindings namespace
-        # which will also be captured & preserved.
+        # result for return, capture the __ENV__ afterwards, and then return
+        # the result - and we need to do it without polluting the bindings namespace
+        # with our own internal bindings.
 
         Enum.at(
           [unquote(expr), send(unquote(output_pid), {:command_env, __ENV__})],
