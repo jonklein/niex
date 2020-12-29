@@ -161,6 +161,6 @@ Sample notebook:
 ## WARNING: arbitrary code execution
 
 This software enables arbitrary code execution **by design** – it is intended for **development and local use only**.  If you
-choose expose any Niex functionality is available over a network, you are responsible for
+choose to expose any Niex functionality over a network, you are responsible for
 implementing the necessary authorization and access controls. 
 
