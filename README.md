@@ -25,6 +25,8 @@ Phoenix app:
 ```
 git clone https://github.com/jonklein/niex.git
 cd niex
+mix deps.get
+(cd assets; yarn)
 mix phx.server
 ```
 
