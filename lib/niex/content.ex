@@ -37,6 +37,20 @@ defmodule Niex.Content do
   end
 
   @doc """
+  Builds content for a cell containing plain HTML
+  """
+  def html(content) do
+    %Niex.Content{type: "html", content: content}
+  end
+
+  @doc """
+  Builds content for a cell containing preformatted text
+  """
+  def pre(content) do
+    %Niex.Content{type: "pre", content: content}
+  end
+
+  @doc """
   Renders the provided `Niex.Content` into HTML
   """
   def render(%Niex.Content{type: "chart", content: data}) do
@@ -57,5 +71,15 @@ defmodule Niex.Content do
     """
     <video controls width="#{options[:width]}" height="#{options[:height]}" src="#{url}" />
     """
+  end
+
+  def render(%Niex.Content{type: "pre", content: content}) do
+    """
+    <pre>#{content}</pre>
+    """
+  end
+
+  def render(%Niex.Content{type: "html", content: content}) do
+    content
   end
 end
