@@ -64,8 +64,9 @@
       width: 100%;
     }
 
-      .cell {
+    .cell {
       position: relative;
+      tab-index: 1;
     }
 
     .cell button {

@@ -6,18 +6,18 @@ import ChartJS from "chart.js"
 
 const resizeTextArea = (el) => {
     el.style.height = "5px"
-    el.style.height = (el.scrollHeight)+"px"
+    el.style.height = (el.scrollHeight) + "px"
 }
 
 export const hooks = {
     NiexChart: {
-        mounted: function() {
+        mounted: function () {
             let data = JSON.parse(this.el.attributes['data-chart'].value)
             let f = Chartkick[data.type]
             let options = data.options || {}
             new f(this.el, data.data, options)
         },
-        updated: function() {
+        updated: function () {
             let data = JSON.parse(this.el.attributes['data-chart'].value)
             let f = Chartkick[data.type]
             let options = data.options || {}
@@ -26,15 +26,23 @@ export const hooks = {
     },
 
     NiexPage: {
-        mounted: function() {
+        mounted: function () {
+            window.addEventListener("click", (e) => {
+                // any click not the child of a cell should blur
+
+                if (!e.target.closest(".cell")) {
+                    this.pushEvent("blur-cell", {})
+                }
+            })
+
             window.addEventListener("keypress", (e) => {
-                if(e.code === "KeyS" && e.metaKey) {
+                if (e.code === "KeyS" && e.metaKey) {
                     this.pushEvent("save", {})
                     e.preventDefault()
                     e.stopPropagation()
                 }
 
-                if(e.code === "KeyO" && e.metaKey) {
+                if (e.code === "KeyO" && e.metaKey) {
                     this.pushEvent("open", {})
                     e.preventDefault()
                     e.stopPropagation()

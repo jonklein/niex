@@ -13,11 +13,11 @@ defmodule NiexWeb.Cells do
         }
       ) do
     ~L"""
-    <div class="cell markdown"  class="cell"  phx-value-ref="<%= @cell.id %>" phx-blur="blur-cell">
-      <form phx-change="update-content" phx-blur="blur-cell" phx-value-ref="<%= @cell.id %>">
+    <div class="cell markdown"  class="cell"  phx-value-ref="<%= @cell.id %>">
+      <form phx-change="update-content" phx-value-ref="<%= @cell.id %>">
         <input type="hidden" name="ref" value="<%= @cell.id %>" />
         <input type="hidden" name="cell_type" value="markdown" />
-        <textarea autofocus phx-blur="blur-cell" phx-value-ref="<%= @cell.id %>" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= @cell.id %>"><%= @cell[:content] %></textarea>
+        <textarea autofocus phx-value-ref="<%= @cell.id %>" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= @cell.id %>"><%= @cell[:content] %></textarea>
       </form>
       <div class="toolbar">
         <button class="remove" phx-click="remove-cell" phx-value-ref="<%= @cell.id %>">
@@ -58,7 +58,7 @@ defmodule NiexWeb.Cells do
           <form phx-submit="noop" phx-change="update-content">
            <input type="hidden" name="ref" value="<%= @cell.id %>" />
            <input type="hidden" name="cell_type" value="code" />
-          <textarea spellcheck="false" autofocus phx-blur="blur-cell" phx-click="focus-cell" phx-value-ref="<%= @cell.id %>" phx-hook="NiexCodeEditor" name="text" id="cell-code-<%= @cell.id %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
+          <textarea spellcheck="false" autofocus phx-click="focus-cell" phx-value-ref="<%= @cell.id %>" phx-hook="NiexCodeEditor" name="text" id="cell-code-<%= @cell.id %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
          </form>
           <%= if @selected do %>
             <div class="toolbar">
@@ -90,7 +90,7 @@ defmodule NiexWeb.Cells do
 
   defp render_markdown(html, assigns = %{cell: %{}}, errors \\ nil) do
     ~L"""
-    <div class="cell markdown" phx-click="focus-cell" phx-blur="blur-cell" class="cell" phx-value-ref="<%= @cell.id %>">
+    <div class="cell markdown" phx-click="focus-cell" class="cell" phx-value-ref="<%= @cell.id %>">
       <div class="content"><%= raw(html) %></div>
       <%= if errors do %>
       <div class="error">
