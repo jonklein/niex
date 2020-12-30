@@ -214,6 +214,10 @@ header nav a {
     background: #eee;
     border: 1px solid #ddd;
     padding: 8px; }
+  .niex .niex-body .cell.markdown .error {
+    color: #888888;
+    font-size: .8em;
+    margin: 4px; }
   .niex .niex-body .cell .content .out {
     background: #f8f8f8;
     border: 1px solid #ddd;
@@ -222,7 +226,8 @@ header nav a {
     border-radius: 4px;
     width: 100%; }
   .niex .niex-body .cell {
-    position: relative; }
+    position: relative;
+    tab-index: 1; }
   .niex .niex-body .cell button {
     color: #333333; }
   .niex .niex-body .cell .cell-row {

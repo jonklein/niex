@@ -34,7 +34,19 @@ defmodule Niex.Eval.AsyncEvaluator do
         {:ok, eval_string_with_env(output_pid, cmd, bindings, env)}
       rescue
         err ->
-          {:error, {err, []}}
+          # Error in user code cell.  Filter the stacktrace by removing frames
+          # higher than this one (ie, Niex internals).
+
+          trace =
+            __STACKTRACE__
+            |> Enum.take_while(fn {mod, _, _, _} ->
+              Enum.at(String.split(Atom.to_string(mod), "."), 1) != "Niex"
+            end)
+
+          {:error,
+           {Niex.Content.pre(
+              Exception.format_banner(:error, err) <> Exception.format_stacktrace(trace)
+            ), []}}
       end
 
     # To avoid a race condition with output messages being delivered from

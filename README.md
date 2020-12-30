@@ -102,11 +102,21 @@ end
 "Click run to animate"
 ``` 
 
-### Media
+### Cell Output Display & Media
 
-Niex supports embeddable image, video and chart content in notebooks:
+By default, Niex displays the "inspect" string of any output.  This is most useful
+for looking at raw Elixir data including complex data like maps, lists & structs.
+
+You can also control the display of output with `Niex.Content` functions.  Niex supports 
+HTML, preformatted text, images, video and chart content in notebooks:
 
 ```
+# Render HTML
+Niex.Content.image("<h1>Hello, World</h1>")
+
+# Render preformatted text
+Niex.Content.image("# This is a code comment")
+
 # Render an image
 image_url = "https://placekitten.com/408/287"
 Niex.Content.image(image_url)
