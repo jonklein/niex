@@ -7,7 +7,9 @@ defmodule NiexWeb.Cells do
   def render(
         assigns = %{
           selected: true,
-          cell: %{cell_type: "markdown"}
+          cell: %{
+            cell_type: "markdown"
+          }
         }
       ) do
     ~L"""
@@ -33,10 +35,9 @@ defmodule NiexWeb.Cells do
           }
         }
       ) do
-
     case Earmark.as_html(Enum.join(assigns[:cell][:content], "\n")) do
-      {:ok, html, _}  -> render_markdown(html, assigns)
-      {:error, _, messages} -> render_error(messages, assigns)
+      {:ok, html, _} -> render_markdown(html, assigns)
+      {:error, html, messages} -> render_markdown(html, assigns, messages)
     end
   end
 
@@ -87,28 +88,16 @@ defmodule NiexWeb.Cells do
     """
   end
 
-  defp render_error( messages,
-        assigns = %{
-          cell: %{}
-        }) do
-    message_text =
-      messages
-      |> Enum.map(&inspect(&1))
-      |> Enum.join("\n")
-    ~L"""
-    <div class="cell markdown" phx-click="focus-cell" phx-blur="blur-cell" class="cell" phx-value-ref="<%= @cell.id %>">
-      <div class="content"><%= message_text %></div>
-    </div>
-    """
-  end
-
-  defp render_markdown( html, 
-        assigns = %{
-          cell: %{}
-        }) do
+  defp render_markdown(html, assigns = %{cell: %{}}, errors \\ nil) do
     ~L"""
     <div class="cell markdown" phx-click="focus-cell" phx-blur="blur-cell" class="cell" phx-value-ref="<%= @cell.id %>">
       <div class="content"><%= raw(html) %></div>
+      <%= if errors do %>
+      <div class="error">
+      <i class="fas fa-exclamation-triangle"></i>
+        Markdown format error: <%= Enum.map(errors, fn {_, _, msg} -> msg end) |> Enum.join(", ") %>
+      <% end %>
+      </div>
     </div>
     """
   end

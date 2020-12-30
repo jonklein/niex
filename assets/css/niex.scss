@@ -49,6 +49,12 @@
       padding: 8px;
     }
 
+    .cell.markdown .error {
+      color: #888888;
+      font-size: .8em;
+      margin: 4px;
+    }
+
     .cell .content .out {
       background: #f8f8f8;
       border: 1px solid #ddd;
