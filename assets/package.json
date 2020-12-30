@@ -9,12 +9,14 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "add": "^2.0.6",
+    "babel-plugin-prismjs": "^2.0.1",
     "chart.js": "^2.9.4",
     "chartkick": "^3.2.1",
     "nprogress": "^0.2.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "prismjs": "^1.22.0",
     "yarn": "^1.22.10"
   },
   "devDependencies": {

@@ -7,15 +7,17 @@ defmodule NiexWeb.Cells do
   def render(
         assigns = %{
           selected: true,
-          cell: %{cell_type: "markdown"}
+          cell: %{
+            cell_type: "markdown"
+          }
         }
       ) do
     ~L"""
-    <div class="cell markdown"  class="cell"  phx-value-ref="<%= @cell.id %>" phx-blur="blur-cell">
-      <form phx-change="update-content" phx-blur="blur-cell" phx-value-ref="<%= @cell.id %>">
+    <div class="cell markdown"  class="cell"  phx-value-ref="<%= @cell.id %>">
+      <form phx-change="update-content" phx-value-ref="<%= @cell.id %>">
         <input type="hidden" name="ref" value="<%= @cell.id %>" />
         <input type="hidden" name="cell_type" value="markdown" />
-        <textarea autofocus phx-blur="blur-cell" phx-value-ref="<%= @cell.id %>" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= @cell.id %>"><%= @cell[:content] %></textarea>
+        <textarea autofocus phx-value-ref="<%= @cell.id %>" phx-focus="focus-cell" name="text" phx-hook="NiexEditor" id="cell-text-<%= @cell.id %>"><%= @cell[:content] %></textarea>
       </form>
       <div class="toolbar">
         <button class="remove" phx-click="remove-cell" phx-value-ref="<%= @cell.id %>">
@@ -33,20 +35,18 @@ defmodule NiexWeb.Cells do
           }
         }
       ) do
-    {:ok, html, _} = Earmark.as_html(Enum.join(assigns[:cell][:content], "\n"))
-
-    ~L"""
-    <div class="cell markdown" phx-click="focus-cell" phx-blur="blur-cell" class="cell" phx-value-ref="<%= @cell.id %>">
-      <div class="content"><%= raw(html) %></div>
-    </div>
-    """
+    case Earmark.as_html(Enum.join(assigns[:cell][:content], "\n")) do
+      {:ok, html, _} -> render_markdown(html, assigns)
+      {:error, html, messages} -> render_markdown(html, assigns, messages)
+    end
   end
 
   def render(
         assigns = %{
-          cell: %{
-            cell_type: "code"
-          }
+          cell:
+            %{
+              cell_type: "code"
+            }
         }
       ) do
     ~L"""
@@ -59,7 +59,7 @@ defmodule NiexWeb.Cells do
           <form phx-submit="noop" phx-change="update-content">
            <input type="hidden" name="ref" value="<%= @cell.id %>" />
            <input type="hidden" name="cell_type" value="code" />
-          <textarea spellcheck="false" autofocus phx-blur="blur-cell" phx-click="focus-cell" phx-value-ref="<%= @cell.id %>" phx-hook="NiexCodeEditor" name="text" id="cell-code-<%= @cell.id %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
+          <textarea spellcheck="false" autofocus phx-click="focus-cell" phx-value-ref="<%= @cell.id %>" phx-hook="NiexCodeEditor" name="text" id="cell-code-<%= @cell.id %>"><%= Enum.join(@cell[:content], "\n") %></textarea>
          </form>
           <%= if @selected do %>
             <div class="toolbar">
@@ -79,13 +79,40 @@ defmodule NiexWeb.Cells do
             Out [<%= @cell[:prompt_number] %>]:
         </span>
         <span class="content">
-          <div class="out">
-            <%= raw(Enum.join(Enum.map(@cell[:outputs], & &1[:text]), "\n")) %>
+          <div class="out" >
+            <%= for {o, i} <- Enum.with_index(@cell.outputs) do %>
+              <div class="out-line" phx-hook="NiexOutput" id="cell-out-<%= @cell.id %>-<%= i %>" data-type="<%= o[:type] %>">
+                <%= render_output(o) %>
+              </div>
+            <% end %>
           </div>
         </span>
         </div>
       </div>
     </pre>
     """
+  end
+
+  defp render_markdown(html, assigns = %{cell: %{}}, errors \\ nil) do
+    ~L"""
+    <div class="cell markdown" phx-click="focus-cell" class="cell" phx-value-ref="<%= @cell.id %>">
+      <div class="content"><%= raw(html) %></div>
+      <%= if errors do %>
+      <div class="error">
+      <i class="fas fa-exclamation-triangle"></i>
+        Markdown format error: <%= Enum.map(errors, fn {_, _, msg} -> msg end) |> Enum.join(", ") %>
+      <% end %>
+      </div>
+    </div>
+    """
+  end
+
+  defp render_output(%{text: text, type: "html"}) do
+    # pre-rendered HTML
+    raw(text)
+  end
+
+  defp render_output(%{text: text}) do
+    text
   end
 end
