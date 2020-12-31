@@ -81,13 +81,15 @@ export const hooks = {
     },
 
     NiexOutput: {
+        highlight: function (el) {
+            if(el.attributes['data-type'].value == "code")
+                el.innerHTML = Prism.highlight(el.innerText, Prism.languages.elixir, 'elixir');
+        },
         mounted: function () {
-            if(this.el.attributes['data-type'].value == "code   ")
-                this.el.innerHTML = Prism.highlight(this.el.innerText, Prism.languages.elixir, 'elixir');
+            this.highlight(this.el)
         },
         updated: function () {
-            if(this.el.attributes['data-type'].value == "code")
-                this.el.innerHTML = Prism.highlight(this.el.innerText, Prism.languages.elixir, 'elixir');
+            this.highlight(this.el)
         }
 
     }
