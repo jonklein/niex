@@ -30,10 +30,10 @@ defmodule Niex.Eval.OutputCapture do
   end
 
   def outputs(output = %Niex.Content{}) do
-    [%{text: Niex.Content.render(output)}]
+    [%{type: "html", text: Niex.Content.render(output)}]
   end
 
   def outputs(output) do
-    [%{text: [inspect(output)]}]
+    [%{type: "code", text: [inspect(output)]}]
   end
 end

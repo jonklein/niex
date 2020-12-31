@@ -1,6 +1,8 @@
 import '@fortawesome/fontawesome-free/js/fontawesome'
 import '@fortawesome/fontawesome-free/js/solid'
 
+import Prism from 'prismjs';
+
 import Chartkick from "chartkick"
 import ChartJS from "chart.js"
 
@@ -76,5 +78,19 @@ export const hooks = {
         updated: function () {
             resizeTextArea(this.el)
         }
+    },
+
+    NiexOutput: {
+        highlight: function (el) {
+            if(el.attributes['data-type'].value == "code")
+                el.innerHTML = Prism.highlight(el.innerText, Prism.languages.elixir, 'elixir');
+        },
+        mounted: function () {
+            this.highlight(this.el)
+        },
+        updated: function () {
+            this.highlight(this.el)
+        }
+
     }
 }

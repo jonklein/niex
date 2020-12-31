@@ -78,8 +78,12 @@ defmodule NiexWeb.Cells do
             Out [<%= @cell[:prompt_number] %>]:
         </span>
         <span class="content">
-          <div class="out">
-            <%= raw(Enum.join(Enum.map(@cell[:outputs], & &1[:text]), "\n")) %>
+          <div class="out" >
+            <%= for {o, i} <- Enum.with_index(@cell.outputs) do %>
+              <div class="out-line" phx-hook="NiexOutput" id="cell-out-<%= @cell.id %>-<%= i %>" data-type="<%= o[:type] %>">
+                <%= render_output(o) %>
+              </div>
+            <% end %>
           </div>
         </span>
         </div>
@@ -100,5 +104,14 @@ defmodule NiexWeb.Cells do
       </div>
     </div>
     """
+  end
+
+  defp render_output(%{text: text, type: "code"}) do
+    text
+  end
+
+  defp render_output(%{text: text}) do
+    # pre-rendered HTML
+    raw(text)
   end
 end

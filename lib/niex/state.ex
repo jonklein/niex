@@ -15,7 +15,7 @@ defmodule Niex.State do
 
   def new() do
     %Niex.State{
-      dirty: true,
+      dirty: false,
       notebook: %Niex.Notebook{
         metadata: %{name: "Untitled Notebook"},
         worksheets: [
@@ -26,7 +26,7 @@ defmodule Niex.State do
                 id: UUID.uuid4(),
                 cell_type: "code",
                 content: ["IO.inspect(\"hello, world\")"],
-                outputs: [%{"text" => ""}]
+                outputs: [%{text: "", type: "code"}]
               }
             ]
           }
