@@ -112,10 +112,10 @@ HTML, preformatted text, images, video and chart content in notebooks:
 
 ```
 # Render HTML
-Niex.Content.image("<h1>Hello, World</h1>")
+Niex.Content.html("<h1>Hello, World</h1>")
 
 # Render preformatted text
-Niex.Content.image("# This is a code comment")
+Niex.Content.pre("# This is a code comment")
 
 # Render an image
 image_url = "https://placekitten.com/408/287"

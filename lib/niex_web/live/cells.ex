@@ -43,10 +43,9 @@ defmodule NiexWeb.Cells do
 
   def render(
         assigns = %{
-          cell:
-            %{
-              cell_type: "code"
-            }
+          cell: %{
+            cell_type: "code"
+          }
         }
       ) do
     ~L"""
