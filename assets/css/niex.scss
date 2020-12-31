@@ -64,7 +64,10 @@
       width: 100%;
     }
 
-    .cell .content .out-line[data-type="code"] {
+    .cell .content .out-line {
+      display: flex;
+    }
+      .cell .content .out-line[data-type="code"] {
       font-family: monospace;
     }
 

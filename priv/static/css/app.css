@@ -225,6 +225,8 @@ header nav a {
     padding: 8px;
     border-radius: 4px;
     width: 100%; }
+  .niex .niex-body .cell .content .out-line {
+    display: flex; }
   .niex .niex-body .cell .content .out-line[data-type="code"] {
     font-family: monospace; }
   .niex .niex-body .cell {
