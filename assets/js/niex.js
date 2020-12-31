@@ -82,11 +82,11 @@ export const hooks = {
 
     NiexOutput: {
         mounted: function () {
-            if(this.el.attributes['data-type'].value != "html")
+            if(this.el.attributes['data-type'].value == "code   ")
                 this.el.innerHTML = Prism.highlight(this.el.innerText, Prism.languages.elixir, 'elixir');
         },
         updated: function () {
-            if(this.el.attributes['data-type'].value != "html")
+            if(this.el.attributes['data-type'].value == "code")
                 this.el.innerHTML = Prism.highlight(this.el.innerText, Prism.languages.elixir, 'elixir');
         }
 

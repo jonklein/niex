@@ -106,12 +106,12 @@ defmodule NiexWeb.Cells do
     """
   end
 
-  defp render_output(%{text: text, type: "html"}) do
-    # pre-rendered HTML
-    raw(text)
+  defp render_output(%{text: text, type: "code"}) do
+    text
   end
 
   defp render_output(%{text: text}) do
-    text
+    # pre-rendered HTML
+    raw(text)
   end
 end
