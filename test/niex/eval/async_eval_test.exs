@@ -1,5 +1,7 @@
 defmodule EvalTestServer do
-  # A simple test GenServer to capture the various forms of async output for our async evaluator
+  # A simple test GenServer to capture the various forms of async output for our evaluator.
+  # In the actual app, this role is played by the LiveView process which receives the
+  # messages and updates the application state.
 
   use GenServer
 
@@ -15,7 +17,7 @@ defmodule EvalTestServer do
     {:ok, state}
   end
 
-  def handle_call(_, from, state) do
+  def handle_call(_, _, state) do
     {:reply, state, state}
   end
 
@@ -27,7 +29,7 @@ defmodule EvalTestServer do
     {:noreply, %{state | bindings: bindings}}
   end
 
-  def handle_info({:command_output, _ctx, output}, state) do
+  def handle_info({:command_output, _, output}, state) do
     {:noreply, %{state | output: output}}
   end
 end
