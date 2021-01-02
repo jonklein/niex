@@ -1,4 +1,4 @@
-defmodule NiexWeb.StateTest do
+defmodule Niex.StateTest do
   use Niex.DataCase
 
   test "creates a new with defaults" do
