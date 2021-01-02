@@ -7,7 +7,7 @@ defmodule Niex.State do
     notebook: %Niex.Notebook{},
     selected_cell: nil,
     worksheet: 0,
-    env: __ENV__,
+    env: [],
     bindings: [],
     path: nil,
     dirty: false
