@@ -1,4 +1,4 @@
-defmodule Niex.Eval.AsyncEvaluator do
+defmodule Niex.Eval.AsyncEval do
   @moduledoc """
   Defines a process for asynchronous code execution and capture of various forms
   of output and state.  Along with the `Niex.Eval.OutputCapture` module, this
@@ -46,7 +46,7 @@ defmodule Niex.Eval.AsyncEvaluator do
           {:error,
            {Niex.Content.pre(
               Exception.format_banner(:error, err) <> Exception.format_stacktrace(trace)
-            ), []}}
+            ), nil}}
       end
 
     # To avoid a race condition with output messages being delivered from
@@ -66,7 +66,9 @@ defmodule Niex.Eval.AsyncEvaluator do
        %{running: false, outputs: Niex.Eval.OutputCapture.outputs(result)}}
     )
 
-    send(output_pid, {:command_bindings, bindings})
+    if bindings do
+      send(output_pid, {:command_bindings, bindings})
+    end
 
     Registry.unregister(Niex.CellEvaluation, context_data)
 

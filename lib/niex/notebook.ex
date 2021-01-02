@@ -76,7 +76,7 @@ defmodule Niex.Notebook do
     cell = cell(notebook, worksheet, index)
     cmd = Enum.join(cell.content, "\n")
 
-    Niex.Eval.AsyncEvaluator.eval_string(output_pid, cell.id, cmd, bindings, env)
+    Niex.Eval.AsyncEval.eval_string(output_pid, cell.id, cmd, bindings, env)
 
     update_cell(notebook, id, %{running: true})
   end
