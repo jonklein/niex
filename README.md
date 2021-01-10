@@ -1,5 +1,12 @@
 # Niex - Interactive Elixir Code Notebooks
 
+<!-- xyz -->
+
+```{ex}
+code
+```
+
+
 Niex is an interactive Elixir code notebook with support for embedded media and 
 charting, built with Phoenix LiveView.  Niex stores your data & code in persistent, interactive notebooks, making it great for scientific and 
 data analysis applications using Elixir, or for sharing visual, interactive demos and documentation of code
