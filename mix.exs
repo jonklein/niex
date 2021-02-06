@@ -43,7 +43,7 @@ defmodule Niex.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
-      {:poison, "~> 3.1.0"},
+      {:poison, ">= 3.1.0"},
       {:earmark, "~> 1.4.13"},
       {:uuid, "~> 1.1.8"},
       {:plug_cowboy, "~> 2.0"}
